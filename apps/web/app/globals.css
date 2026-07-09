@@ -1,0 +1,84 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, system-ui, sans-serif;
+  color: #111827;
+  background: #F4F6FB;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #F4F6FB;
+  color: #111827;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 300px;
+  padding: 24px;
+  background: #FFFFFF;
+  border-right: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.sidebar-header {
+  margin-bottom: 24px;
+}
+
+.sidebar-header strong {
+  display: block;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+}
+
+.sidebar-header span {
+  display: block;
+  margin-top: 4px;
+  color: #6F7C9A;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-link {
+  display: block;
+  text-decoration: none;
+  color: #111827;
+  padding: 12px 14px;
+  border-radius: 12px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background: #EEF3FF;
+}
+
+.page-content {
+  flex: 1;
+  padding: 32px;
+}
+
+.page-content h1 {
+  margin-top: 0;
+  font-size: 36px;
+}
+
+.page-content p {
+  font-size: 18px;
+  line-height: 1.75;
+}

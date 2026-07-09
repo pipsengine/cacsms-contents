@@ -36,6 +36,7 @@ export type NavChild = {
   title: string
   href: string
   badge?: string | number
+  requiredPermission?: string
 }
 
 export type NavItem = {
@@ -44,6 +45,7 @@ export type NavItem = {
   href: string
   icon: LucideIcon
   badge?: string | number
+  requiredPermission?: string
   children?: NavChild[]
 }
 
@@ -491,14 +493,14 @@ export const navigationSections: NavSection[] = [
         href: '/system-monitoring',
         icon: Monitor,
         children: [
-          { id: 'workflow-status', title: 'Workflow Status', href: '/system-monitoring/workflow-status' },
-          { id: 'implementation-status', title: 'Implementation Status', href: '/system-monitoring/implementation-status' },
-          { id: 'service-health', title: 'Service Health', href: '/system-monitoring/service-health' },
-          { id: 'api-status', title: 'API Status', href: '/system-monitoring/api-status' },
-          { id: 'background-jobs', title: 'Background Jobs', href: '/system-monitoring/background-jobs' },
-          { id: 'uptime-monitoring', title: 'Uptime Monitoring', href: '/system-monitoring/uptime-monitoring' },
-          { id: 'logs', title: 'Logs', href: '/system-monitoring/logs' },
-          { id: 'incident-management', title: 'Incident Management', href: '/system-monitoring/incident-management' },
+          { id: 'workflow-status', title: 'Workflow Status', href: '/dashboard/system-monitoring/workflow-status' },
+          { id: 'implementation-status', title: 'Implementation Status', href: '/dashboard/system-monitoring/implementation-status' },
+          { id: 'service-health', title: 'Service Health', href: '/dashboard/system-monitoring/service-health' },
+          { id: 'api-status', title: 'API Status', href: '/dashboard/system-monitoring/api-status' },
+          { id: 'background-jobs', title: 'Background Jobs', href: '/dashboard/system-monitoring/background-jobs' },
+          { id: 'uptime-monitoring', title: 'Uptime Monitoring', href: '/dashboard/system-monitoring/uptime-monitoring' },
+          { id: 'logs', title: 'Logs', href: '/dashboard/system-monitoring/logs' },
+          { id: 'incident-management', title: 'Incident Management', href: '/dashboard/system-monitoring/incident-management' },
         ],
       },
       {

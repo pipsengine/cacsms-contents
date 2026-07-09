@@ -6,11 +6,13 @@ import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Menu } from 'lucide-react'
 import { SidebarHeader } from './SidebarHeader'
 import { SidebarSearch } from './SidebarSearch'
-import { SidebarSection } from './SidebarSection'
 import { SidebarFooter } from './SidebarFooter'
 import { Topbar } from './Topbar'
-import { navigationSections } from '@/config/navigation'
 import { useSidebarState } from '@/hooks/useSidebarState'
+import { useNavigation } from '@/hooks/useNavigation'
+import { useCurrentUser } from '@/hooks/useCurrentUser'
+import { useCurrentOrganization } from '@/hooks/useCurrentOrganization'
+import { PermissionAwareSidebar } from './PermissionAwareSidebar'
 
 const SIDEBAR_SCROLL_KEY = 'cacsms-sidebar-scroll-top'
 
@@ -26,11 +28,13 @@ export function AppShell({
   const { collapsed, toggleCollapsed } = useSidebarState()
   const [manualExpandedItems, setManualExpandedItems] = useState<string[] | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { sections, loading: navigationLoading } = useNavigation()
+  const { user } = useCurrentUser()
+  const { organization } = useCurrentOrganization()
   const mainRef = useRef<HTMLDivElement>(null)
   const sidebarBodyRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
-  const sections = useMemo(() => navigationSections, [])
   const activeParentId = useMemo(() => {
     for (const section of sections) {
       const activeItem = section.items.find((item) => {
@@ -94,7 +98,7 @@ export function AppShell({
   return (
     <div className={`app-shell ${collapsed ? 'sidebar-collapsed' : ''} ${sidebarVariant === 'landing' ? 'landing-sidebar-shell' : ''}`}>
       <aside className={`app-sidebar ${mobileOpen ? 'open' : ''}`}>
-        <SidebarHeader collapsed={collapsed} onToggle={toggleCollapsed} variant={sidebarVariant} />
+        <SidebarHeader collapsed={collapsed} onToggle={toggleCollapsed} variant={sidebarVariant} organization={organization} />
         {sidebarVariant === 'landing' ? (
           <Link href="/" className="sidebar-dashboard-link active" onClick={handleNavigate}>
             <LayoutDashboard size={15} />
@@ -104,18 +108,16 @@ export function AppShell({
           <SidebarSearch collapsed={collapsed} />
         )}
         <div ref={sidebarBodyRef} className="app-sidebar-body" onScroll={saveSidebarScroll}>
-          {sections.map((section) => (
-            <SidebarSection
-              key={section.id}
-              section={section}
-              collapsed={collapsed}
-              expandedItems={expandedItems}
-              onToggleItem={toggleItem}
-              onNavigate={handleNavigate}
-            />
-          ))}
+          <PermissionAwareSidebar
+            sections={sections}
+            loading={sidebarVariant !== 'landing' && navigationLoading}
+            collapsed={collapsed}
+            expandedItems={expandedItems}
+            onToggleItem={toggleItem}
+            onNavigate={handleNavigate}
+          />
         </div>
-        <SidebarFooter collapsed={collapsed} variant={sidebarVariant} />
+        <SidebarFooter collapsed={collapsed} variant={sidebarVariant} user={user} />
       </aside>
       {mobileOpen ? (
         <button

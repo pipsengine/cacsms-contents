@@ -1,13 +1,16 @@
 'use client'
 
 import { Cpu, LogOut, Sparkles } from 'lucide-react'
+import type { CurrentUser } from '@/services/sessionService'
 
 export function SidebarFooter({
   collapsed,
   variant = 'default',
+  user,
 }: {
   collapsed: boolean
   variant?: 'default' | 'landing'
+  user?: CurrentUser | null
 }) {
   return (
     <div className="sidebar-footer">
@@ -23,14 +26,14 @@ export function SidebarFooter({
       </div>
       {!collapsed ? (
         <div className="sidebar-profile-card">
-          <div className={variant === 'landing' ? 'sidebar-profile-photo' : 'sidebar-profile-avatar'}>{variant === 'landing' ? '' : 'AC'}</div>
+          <div className={variant === 'landing' ? 'sidebar-profile-photo' : 'sidebar-profile-avatar'}>{variant === 'landing' ? '' : user?.avatarInitials ?? 'JD'}</div>
           <div>
-            <p className="sidebar-profile-name">{variant === 'landing' ? 'John Doe' : 'Alex Carter'}</p>
-            <p className="sidebar-profile-role">{variant === 'landing' ? 'Super Admin' : 'Product Lead'}</p>
+            <p className="sidebar-profile-name">{user?.name ?? 'John Doe'}</p>
+            <p className="sidebar-profile-role">{user?.roleLabel ?? 'Super Administrator'}</p>
           </div>
         </div>
       ) : (
-        <div className="sidebar-profile-avatar collapsed">AC</div>
+        <div className="sidebar-profile-avatar collapsed">{user?.avatarInitials ?? 'JD'}</div>
       )}
       <div className="sidebar-footer-actions">
         <button type="button" className="sidebar-footer-button">

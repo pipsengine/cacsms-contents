@@ -1,15 +1,18 @@
 'use client'
 
 import { ChevronDown, ChevronLeft, CircleDotDashed, Home } from 'lucide-react'
+import type { CurrentOrganization } from '@/services/sessionService'
 
 export function SidebarHeader({
   collapsed,
   onToggle,
   variant = 'default',
+  organization,
 }: {
   collapsed: boolean
   onToggle: () => void
   variant?: 'default' | 'landing'
+  organization?: CurrentOrganization | null
 }) {
   return (
     <div className="sidebar-header-block">
@@ -29,8 +32,8 @@ export function SidebarHeader({
         <button type="button" className="sidebar-org-switcher">
           <div className="sidebar-org-avatar">A</div>
           <div className="sidebar-org-details">
-            <span className="sidebar-org-name">Acme Media</span>
-            <span className="sidebar-org-subtitle">Team Beta</span>
+            <span className="sidebar-org-name">{organization?.name ?? 'AI Media Group'}</span>
+            <span className="sidebar-org-subtitle">{organization?.teamName ?? 'Enterprise Plan'}</span>
           </div>
           <ChevronDown size={16} />
         </button>

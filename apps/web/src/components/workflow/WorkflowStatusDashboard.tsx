@@ -1,3 +1,5 @@
+'use client'
+
 import {
   BarChart3,
   Brain,
@@ -18,6 +20,7 @@ import {
   Youtube,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { useEffect } from 'react'
 
 type StageTone = 'purple' | 'blue' | 'indigo' | 'orange' | 'teal' | 'green' | 'violet' | 'pink'
 
@@ -164,6 +167,11 @@ function Sparkline() {
 }
 
 export function WorkflowStatusDashboard() {
+  useEffect(() => {
+    fetch('/api/system-monitoring/workflow-status', { cache: 'no-store' })
+      .catch((error) => console.error('[workflow-status] API fallback active', error))
+  }, [])
+
   return (
     <div className="workflow-dashboard">
       <header className="workflow-header">

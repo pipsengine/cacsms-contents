@@ -1,3 +1,5 @@
+'use client'
+
 import {
   AlertCircle,
   Bell,
@@ -22,6 +24,7 @@ import {
   Table2,
 } from 'lucide-react'
 import type { ComponentType } from 'react'
+import { useEffect } from 'react'
 
 type Tone = 'blue' | 'green' | 'purple' | 'red' | 'cyan' | 'orange' | 'yellow' | 'pink'
 type Status = 'completed' | 'progress' | 'pending' | 'failed' | 'blocked' | 'na'
@@ -211,6 +214,11 @@ function StatusDot({ status }: { status: Status }) {
 }
 
 export function ImplementationStatusDashboard() {
+  useEffect(() => {
+    fetch('/api/system-monitoring/implementation-status', { cache: 'no-store' })
+      .catch((error) => console.error('[implementation-status] API fallback active', error))
+  }, [])
+
   return (
     <div className="impl-dashboard">
       <header className="impl-topbar">

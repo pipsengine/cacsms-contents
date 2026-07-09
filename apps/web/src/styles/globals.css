@@ -53,6 +53,124 @@ button {
   background: var(--app-bg);
 }
 
+.sidebar-loading {
+  display: grid;
+  gap: 10px;
+  padding: 8px 10px;
+}
+
+.sidebar-loading-row,
+.auth-skeleton,
+.page-guard-skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 45%, #eef2ff 100%);
+  background-size: 220% 100%;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.sidebar-loading-row {
+  height: 34px;
+}
+
+.auth-skeleton,
+.page-guard-skeleton {
+  min-height: 360px;
+  width: 100%;
+}
+
+@keyframes skeleton-pulse {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 220% 50%; }
+}
+
+.access-denied-shell {
+  min-height: calc(100vh - 80px);
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.access-denied-card {
+  width: min(520px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 32px;
+}
+
+.access-denied-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #ef4444;
+  background: #fee2e2;
+  margin-bottom: 18px;
+}
+
+.access-denied-card h1 {
+  font-size: 28px;
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.access-denied-card p {
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.access-denied-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.access-denied-meta span {
+  color: var(--muted);
+}
+
+.access-denied-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.primary-action-button,
+.secondary-action-button {
+  min-height: 42px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primary-action-button {
+  color: #fff;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.secondary-action-button {
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+button:disabled,
+.action-guard-disabled button {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .app-sidebar {
   width: 260px;
   min-width: 260px;
@@ -2386,6 +2504,1010 @@ button {
   font-weight: 900;
 }
 
+.health-dashboard {
+  --health-surface: #FFFFFF;
+  --health-border: #E5E7EB;
+  --health-text: #101828;
+  --health-muted: #667085;
+  --health-blue: #2563EB;
+  --health-purple: #6D5DFC;
+  --health-green: #16A34A;
+  --health-orange: #F97316;
+  --health-yellow: #F59E0B;
+  --health-red: #EF4444;
+  --health-cyan: #0891B2;
+  --health-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  color: var(--health-text);
+  min-width: 1500px;
+  padding-bottom: 28px;
+}
+
+.health-page-head,
+.health-page-actions,
+.health-section-head,
+.health-service-card header,
+.health-service-title,
+.health-card-actions,
+.health-dependency-node,
+.health-bottom-list p,
+.health-sla-list p {
+  display: flex;
+  align-items: center;
+}
+
+.health-page-head {
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.health-breadcrumb {
+  margin-bottom: 12px;
+  color: var(--health-muted);
+  font-size: 13px;
+}
+
+.health-breadcrumb span {
+  margin: 0 8px;
+}
+
+.health-page-head h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.health-page-head p,
+.health-section-head p {
+  margin: 8px 0 0;
+  color: var(--health-muted);
+}
+
+.health-page-actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.health-page-actions button,
+.health-card-actions button,
+.health-table button,
+.health-primary-button {
+  min-height: 38px;
+  border: 1px solid var(--health-border);
+  border-radius: 10px;
+  background: #FFFFFF;
+  color: #334155;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.health-page-actions .health-primary-button {
+  border: none;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  color: #FFFFFF;
+}
+
+.health-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.health-kpi-card,
+.health-card,
+.health-service-card {
+  border: 1px solid var(--health-border);
+  border-radius: 8px;
+  background: var(--health-surface);
+  box-shadow: var(--health-shadow);
+}
+
+.health-kpi-card {
+  min-height: 104px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.health-kpi-dot {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: block;
+  background: #EEF2FF;
+}
+
+.health-kpi-dot.green { background: #DCFCE7; }
+.health-kpi-dot.blue { background: #DBEAFE; }
+.health-kpi-dot.orange { background: #FFEDD5; }
+.health-kpi-dot.red { background: #FEE2E2; }
+.health-kpi-dot.purple { background: #EDE9FE; }
+.health-kpi-dot.cyan { background: #CFFAFE; }
+
+.health-kpi-card small {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.health-kpi-card b {
+  display: block;
+  margin-top: 5px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.health-kpi-card p {
+  margin: 6px 0 0;
+  color: var(--health-green);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.health-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 18px;
+}
+
+.health-main-stack,
+.health-side-panel {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.health-card {
+  padding: 20px;
+  min-width: 0;
+}
+
+.health-section-head {
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.health-section-head h2,
+.health-card h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.health-section-head span {
+  border-radius: 999px;
+  background: #EEF2FF;
+  color: var(--health-purple);
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.health-service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.health-service-card {
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.health-service-card:hover {
+  transform: translateY(-2px);
+  border-color: #C7D2FE;
+  box-shadow: 0 18px 44px rgba(79, 70, 229, 0.12);
+}
+
+.health-service-card header,
+.health-service-title {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.health-service-card header button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: #F8FAFC;
+  color: #64748B;
+}
+
+.health-service-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.health-service-icon.operational { background: #DCFCE7; color: var(--health-green); }
+.health-service-icon.degraded { background: #FFEDD5; color: var(--health-orange); }
+.health-service-icon.failed { background: #FEE2E2; color: var(--health-red); }
+.health-service-icon.starting { background: #DBEAFE; color: var(--health-blue); }
+.health-service-icon.stopped { background: #F1F5F9; color: #64748B; }
+
+.health-service-title h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.health-status,
+.health-severity {
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.health-status.operational { background: #DCFCE7; color: #15803D; }
+.health-status.degraded { background: #FFEDD5; color: #C2410C; }
+.health-status.failed { background: #FEE2E2; color: #B91C1C; }
+.health-status.starting { background: #DBEAFE; color: #1D4ED8; }
+.health-status.stopped { background: #F1F5F9; color: #475569; }
+
+.health-service-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  color: var(--health-muted);
+  font-size: 12px;
+}
+
+.health-service-meta b {
+  display: block;
+  color: #0F172A;
+  font-size: 14px;
+}
+
+.health-progress {
+  height: 7px;
+  border-radius: 999px;
+  background: #E5E7EB;
+  overflow: hidden;
+}
+
+.health-progress span {
+  display: block;
+  height: 100%;
+  background: var(--health-green);
+}
+
+.health-progress.degraded span { background: var(--health-orange); }
+.health-progress.failed span { background: var(--health-red); }
+.health-progress.starting span { background: var(--health-blue); }
+.health-progress.stopped span { background: #64748B; }
+
+.health-card-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.health-card-actions button {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.health-dependency-flow {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.health-dependency-node {
+  position: relative;
+  min-height: 92px;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--health-border);
+  border-radius: 8px;
+  background: #F8FAFC;
+  text-align: center;
+}
+
+.health-dependency-node span {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #EEF2FF;
+  color: var(--health-purple);
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.health-dependency-node b {
+  max-width: 130px;
+  font-size: 12px;
+}
+
+.health-dependency-node svg {
+  position: absolute;
+  right: -17px;
+  color: var(--health-purple);
+  z-index: 2;
+}
+
+.health-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--health-border);
+  border-radius: 8px;
+}
+
+.health-table {
+  width: 100%;
+  min-width: 1120px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.health-table.metrics {
+  min-width: 1320px;
+}
+
+.health-table th {
+  background: #F8FAFC;
+  color: #334155;
+  font-size: 11px;
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--health-border);
+  white-space: nowrap;
+}
+
+.health-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--health-border);
+  color: #334155;
+  white-space: nowrap;
+}
+
+.health-table button {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.health-severity.critical { background: #FEE2E2; color: #B91C1C; }
+.health-severity.high { background: #FFEDD5; color: #C2410C; }
+.health-severity.medium { background: #FEF3C7; color: #A16207; }
+.health-severity.low { background: #DCFCE7; color: #15803D; }
+
+.health-side-card {
+  padding: 18px;
+}
+
+.health-side-card p,
+.health-bottom-list p,
+.health-sla-list p {
+  margin: 0;
+  border-bottom: 1px solid var(--health-border);
+  padding: 12px 0;
+  color: #334155;
+  font-size: 13px;
+}
+
+.health-side-card p {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+}
+
+.health-side-card svg.failed { color: var(--health-red); }
+.health-side-card svg.degraded { color: var(--health-orange); }
+.health-side-card svg.operational { color: var(--health-green); }
+
+.health-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.health-bottom-list,
+.health-sla-list {
+  display: grid;
+  margin-top: 12px;
+}
+
+.health-bottom-list p {
+  gap: 8px;
+}
+
+.health-bottom-list svg {
+  color: var(--health-purple);
+}
+
+.health-sla-list p {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.health-sla-list b {
+  color: var(--health-green);
+}
+
+.api-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.api-card {
+  border: 1px solid var(--health-border);
+  border-radius: 8px;
+  background: #FFFFFF;
+  box-shadow: var(--health-shadow);
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.api-card:hover {
+  transform: translateY(-2px);
+  border-color: #C7D2FE;
+  box-shadow: 0 18px 44px rgba(79, 70, 229, 0.12);
+}
+
+.api-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.api-card-head h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.api-card-head b {
+  font-size: 24px;
+}
+
+.api-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  color: var(--health-muted);
+  font-size: 12px;
+}
+
+.api-card-metrics b {
+  display: block;
+  color: #0F172A;
+  font-size: 13px;
+}
+
+.api-sparkline {
+  width: 100%;
+  height: 44px;
+}
+
+.api-sparkline polyline {
+  fill: none;
+  stroke: var(--health-purple);
+  stroke-width: 3;
+}
+
+.api-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.api-card-actions button {
+  min-height: 32px;
+  border: 1px solid var(--health-border);
+  border-radius: 9px;
+  background: #FFFFFF;
+  color: #334155;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.api-dependency-flow {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.api-endpoint-table {
+  min-width: 1500px;
+}
+
+.api-method {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.api-method.get { background: #DBEAFE; color: #1D4ED8; }
+.api-method.post { background: #DCFCE7; color: #15803D; }
+.api-method.put,
+.api-method.patch { background: #FEF3C7; color: #A16207; }
+.api-method.delete { background: #FEE2E2; color: #B91C1C; }
+
+.api-failure-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.api-failure-card {
+  padding: 18px;
+}
+
+.api-failure-card h2 {
+  text-transform: capitalize;
+}
+
+.api-failure-card p {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  margin: 0;
+  border-bottom: 1px solid var(--health-border);
+  padding: 11px 0;
+  color: #334155;
+  font-size: 13px;
+}
+
+.api-failure-card svg {
+  color: var(--health-orange);
+}
+
+.api-bottom-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.api-trend-card {
+  display: grid;
+  gap: 12px;
+}
+
+.api-trend-card b {
+  color: var(--health-purple);
+  font-size: 24px;
+}
+
+.jobs-dashboard {
+  --jobs-surface: #FFFFFF;
+  --jobs-border: #E5E7EB;
+  --jobs-text: #101828;
+  --jobs-muted: #667085;
+  --jobs-blue: #2563EB;
+  --jobs-purple: #6D5DFC;
+  --jobs-green: #16A34A;
+  --jobs-amber: #F59E0B;
+  --jobs-red: #EF4444;
+  --jobs-dark: #475569;
+  --jobs-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  color: var(--jobs-text);
+  min-width: 1500px;
+  padding-bottom: 28px;
+}
+
+.jobs-page-head,
+.jobs-page-actions,
+.jobs-card-head,
+.jobs-section-head,
+.jobs-event,
+.jobs-dependency-flow {
+  display: flex;
+  align-items: center;
+}
+
+.jobs-page-head {
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.jobs-breadcrumb {
+  margin-bottom: 12px;
+  color: var(--jobs-muted);
+  font-size: 13px;
+}
+
+.jobs-breadcrumb span {
+  margin: 0 8px;
+}
+
+.jobs-page-head h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.jobs-page-head p,
+.jobs-section-head p {
+  margin: 8px 0 0;
+  color: var(--jobs-muted);
+}
+
+.jobs-page-actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.jobs-page-actions button,
+.jobs-primary-button,
+.jobs-worker-card button,
+.jobs-table button,
+.jobs-dependency-flow button {
+  min-height: 38px;
+  border: 1px solid var(--jobs-border);
+  border-radius: 10px;
+  background: #FFFFFF;
+  color: #334155;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.jobs-page-actions .jobs-primary-button {
+  border: none;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  color: #FFFFFF;
+}
+
+.jobs-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.jobs-kpi-card,
+.jobs-card,
+.jobs-queue-card,
+.jobs-worker-card,
+.jobs-distribution-card {
+  border: 1px solid var(--jobs-border);
+  border-radius: 8px;
+  background: var(--jobs-surface);
+  box-shadow: var(--jobs-shadow);
+}
+
+.jobs-kpi-card {
+  min-height: 98px;
+  padding: 16px;
+}
+
+.jobs-kpi-card small {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.jobs-kpi-card b {
+  display: block;
+  margin-top: 8px;
+  font-size: 26px;
+}
+
+.jobs-kpi-card p {
+  margin: 5px 0 0;
+  color: var(--jobs-green);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.jobs-filter-card {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(7, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+  border: 1px solid var(--jobs-border);
+  border-radius: 8px;
+  background: #FFFFFF;
+  box-shadow: var(--jobs-shadow);
+  padding: 14px;
+}
+
+.jobs-filter-card label {
+  min-height: 38px;
+  border: 1px solid var(--jobs-border);
+  border-radius: 9px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--jobs-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.jobs-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 18px;
+}
+
+.jobs-main-stack,
+.jobs-side-panel {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.jobs-card {
+  min-width: 0;
+  padding: 20px;
+}
+
+.jobs-card h2,
+.jobs-section-head h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.jobs-section-head {
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.jobs-queue-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.jobs-queue-card,
+.jobs-worker-card,
+.jobs-distribution-card {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.jobs-card-head {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.jobs-card-head h3,
+.jobs-distribution-card h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.jobs-card-head b {
+  color: var(--jobs-purple);
+  font-size: 22px;
+}
+
+.jobs-queue-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  color: var(--jobs-muted);
+  font-size: 12px;
+}
+
+.jobs-queue-metrics b,
+.jobs-worker-bars b {
+  display: block;
+  color: #0F172A;
+}
+
+.jobs-progress {
+  height: 7px;
+  border-radius: 999px;
+  background: #E5E7EB;
+  overflow: hidden;
+}
+
+.jobs-progress span {
+  display: block;
+  height: 100%;
+  background: var(--jobs-blue);
+}
+
+.jobs-progress.completed span { background: var(--jobs-green); }
+.jobs-progress.running span { background: var(--jobs-blue); }
+.jobs-progress.queued span { background: #94A3B8; }
+.jobs-progress.pending span { background: var(--jobs-amber); }
+.jobs-progress.failed span { background: var(--jobs-red); }
+.jobs-progress.retrying span { background: var(--jobs-purple); }
+.jobs-progress.cancelled span { background: var(--jobs-dark); }
+
+.jobs-timeline {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.jobs-timeline div {
+  min-height: 88px;
+  border: 1px solid var(--jobs-border);
+  border-radius: 8px;
+  background: #F8FAFC;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+}
+
+.jobs-timeline span {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--jobs-purple);
+  animation: jobsPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes jobsPulse {
+  0%, 100% { transform: scale(0.82); opacity: 0.72; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+.jobs-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--jobs-border);
+  border-radius: 8px;
+}
+
+.jobs-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.jobs-table.active {
+  min-width: 1450px;
+}
+
+.jobs-table th {
+  background: #F8FAFC;
+  color: #334155;
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--jobs-border);
+  white-space: nowrap;
+}
+
+.jobs-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--jobs-border);
+  color: #334155;
+  white-space: nowrap;
+}
+
+.jobs-table button {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.jobs-status,
+.jobs-priority {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.jobs-status.completed { background: #DCFCE7; color: #15803D; }
+.jobs-status.running { background: #DBEAFE; color: #1D4ED8; }
+.jobs-status.queued { background: #F1F5F9; color: #475569; }
+.jobs-status.pending { background: #FEF3C7; color: #A16207; }
+.jobs-status.failed { background: #FEE2E2; color: #B91C1C; }
+.jobs-status.retrying { background: #EDE9FE; color: #6D28D9; }
+.jobs-status.cancelled { background: #E2E8F0; color: #334155; }
+
+.jobs-priority.critical { background: #FEE2E2; color: #B91C1C; }
+.jobs-priority.high { background: #FFEDD5; color: #C2410C; }
+.jobs-priority.medium { background: #FEF3C7; color: #A16207; }
+.jobs-priority.low { background: #DCFCE7; color: #15803D; }
+
+.jobs-worker-grid,
+.jobs-distribution-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.jobs-worker-card p {
+  margin: 0;
+  color: var(--jobs-muted);
+  font-size: 12px;
+}
+
+.jobs-worker-bars {
+  display: grid;
+  gap: 8px;
+  color: var(--jobs-muted);
+  font-size: 12px;
+}
+
+.jobs-distribution-card p {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin: 0;
+  color: #334155;
+  font-size: 12px;
+}
+
+.jobs-distribution-card .jobs-progress {
+  grid-column: 1 / -1;
+}
+
+.jobs-dependency-flow {
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.jobs-dependency-flow button {
+  flex: 0 0 166px;
+  min-height: 58px;
+  white-space: normal;
+}
+
+.jobs-side-card p,
+.jobs-event,
+.jobs-bottom-grid .jobs-card p {
+  margin: 0;
+  border-bottom: 1px solid var(--jobs-border);
+  padding: 11px 0;
+  color: #334155;
+  font-size: 13px;
+}
+
+.jobs-side-card p {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+}
+
+.jobs-side-card svg {
+  color: var(--jobs-amber);
+}
+
+.jobs-event {
+  gap: 8px;
+}
+
+.jobs-event svg {
+  color: var(--jobs-purple);
+}
+
+.jobs-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
 .landing-dashboard {
   --landing-border: #E5E7EB;
   --landing-text: #111827;
@@ -3390,6 +4512,62 @@ button {
 }
 
 @media (max-width: 1500px) {
+  .health-dashboard {
+    min-width: 0;
+  }
+
+  .health-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .health-layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-side-panel,
+  .health-bottom-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .health-service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .api-card-grid,
+  .api-failure-grid,
+  .api-bottom-grid,
+  .jobs-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .jobs-dashboard {
+    min-width: 0;
+  }
+
+  .jobs-filter-card,
+  .jobs-layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jobs-queue-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .jobs-worker-grid,
+  .jobs-distribution-grid,
+  .jobs-bottom-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .health-dependency-flow,
+  .api-dependency-flow {
+    overflow-x: auto;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(150px, 1fr);
+    grid-template-columns: none;
+    padding-bottom: 6px;
+  }
+
   .workflow-summary-grid,
   .workflow-card-grid,
   .workflow-detail-grid {
@@ -3402,6 +4580,46 @@ button {
 }
 
 @media (max-width: 980px) {
+  .health-page-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .health-page-actions {
+    justify-content: flex-start;
+  }
+
+  .health-kpi-grid,
+  .health-side-panel,
+  .health-bottom-grid,
+  .api-card-grid,
+  .api-failure-grid,
+  .api-bottom-grid,
+  .jobs-kpi-grid,
+  .jobs-queue-grid,
+  .jobs-worker-grid,
+  .jobs-distribution-grid,
+  .jobs-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jobs-page-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .jobs-page-actions {
+    justify-content: flex-start;
+  }
+
+  .jobs-timeline {
+    overflow-x: auto;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(130px, 1fr);
+    grid-template-columns: none;
+    padding-bottom: 6px;
+  }
+
   .workflow-header {
     flex-direction: column;
   }
@@ -3432,6 +4650,34 @@ button {
 }
 
 @media (max-width: 640px) {
+  .health-page-head h1 {
+    font-size: 26px;
+  }
+
+  .health-service-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-service-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .api-card-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .health-page-actions button {
+    width: 100%;
+  }
+
+  .jobs-page-actions button {
+    width: 100%;
+  }
+
+  .jobs-page-head h1 {
+    font-size: 26px;
+  }
+
   .workflow-header h2 {
     font-size: 26px;
   }

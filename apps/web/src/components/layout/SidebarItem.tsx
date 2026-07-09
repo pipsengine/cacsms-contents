@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, LayoutDashboard } from 'lucide-react'
 import type { NavItem } from '@/config/navigation'
 import { useActiveRoute } from '@/hooks/useActiveRoute'
 
@@ -16,13 +16,14 @@ export function SidebarItem({ item, collapsed, expanded, onToggle, onNavigate }:
   const { activePath, isActiveParent } = useActiveRoute()
   const isActive = isActiveParent(item.href)
   const hasChildren = Boolean(item.children && item.children.length)
+  const Icon = item.icon ?? LayoutDashboard
 
   return (
     <div className={`sidebar-item ${isActive ? 'active' : ''}`}>
       <div className="sidebar-item-row">
         <Link href={item.href} className={`sidebar-item-button ${isActive ? 'active' : ''}`} onClick={onNavigate}>
           <div className="sidebar-item-icon">
-            <item.icon size={18} />
+            <Icon size={18} />
           </div>
           {!collapsed ? (
             <>

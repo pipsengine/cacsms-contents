@@ -1,39 +1,19 @@
-import Link from 'next/link'
+'use client'
 
-const modules = [
-  { id: 'executive-office', label: 'Executive Office' },
-  { id: 'organization-management', label: 'Organization Management' },
-  { id: 'brand-management', label: 'Brand Management' },
-  { id: 'channel-management', label: 'Channel Management' },
-  { id: 'research-intelligence', label: 'Research Intelligence' },
-  { id: 'content-strategy', label: 'Content Strategy' },
-  { id: 'content-production', label: 'Content Production' },
-  { id: 'creative-studio', label: 'Creative Studio' },
-  { id: 'video-studio', label: 'Video Studio' },
-  { id: 'audio-voice-studio', label: 'Audio & Voice Studio' },
-  { id: 'seo-intelligence', label: 'SEO Intelligence' },
-  { id: 'publishing-center', label: 'Publishing Center' },
-  { id: 'marketing-automation', label: 'Marketing Automation' },
-  { id: 'community-management', label: 'Community Management' },
-  { id: 'monetization-center', label: 'Monetization Center' },
-  { id: 'analytics-intelligence', label: 'Analytics & Intelligence' },
-  { id: 'ai-learning-center', label: 'AI Learning Center' },
-  { id: 'ai-agents', label: 'AI Agents' },
-  { id: 'workflow-automation', label: 'Workflow Automation' },
-  { id: 'digital-asset-management', label: 'Digital Asset Management' },
-  { id: 'knowledge-hub', label: 'Knowledge Hub' },
-  { id: 'integrations', label: 'Integrations' },
-  { id: 'notifications', label: 'Notifications' },
-  { id: 'reports', label: 'Reports' },
-  { id: 'compliance-governance', label: 'Compliance & Governance' },
-  { id: 'security-center', label: 'Security Center' },
-  { id: 'administration', label: 'Administration' },
-  { id: 'developer-center', label: 'Developer Center' },
-  { id: 'system-monitoring', label: 'System Monitoring' },
-  { id: 'help-support', label: 'Help & Support' },
-]
+import { useState } from 'react'
+import Link from 'next/link'
+import { moduleData } from './data'
 
 export default function Sidebar() {
+  const [openModules, setOpenModules] = useState<Record<string, boolean>>({})
+
+  const toggleModule = (moduleId: string) => {
+    setOpenModules((prev) => ({
+      ...prev,
+      [moduleId]: !prev[moduleId],
+    }))
+  }
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -42,13 +22,46 @@ export default function Sidebar() {
       </div>
       <nav className="sidebar-nav" aria-label="Primary">
         <ul>
-          {modules.map((module) => (
-            <li key={module.id}>
-              <Link href={`/${module.id}`} className="sidebar-link">
-                {module.label}
-              </Link>
-            </li>
-          ))}
+          {moduleData.map((module) => {
+            const isOpen = Boolean(openModules[module.id])
+
+            return (
+              <li key={module.id}>
+                <div className="sidebar-module-header">
+                  <Link href={`/${module.id}`} className="sidebar-link">
+                    {module.label}
+                  </Link>
+                  <button
+                    type="button"
+                    className={`sidebar-toggle ${isOpen ? 'open' : ''}`}
+                    aria-expanded={isOpen}
+                    aria-controls={`subpages-${module.id}`}
+                    onClick={() => toggleModule(module.id)}
+                  >
+                    <span aria-hidden="true">{isOpen ? '−' : '+'}</span>
+                    <span className="sr-only">
+                      {isOpen ? `Collapse ${module.label}` : `Expand ${module.label}`}
+                    </span>
+                  </button>
+                </div>
+                {module.subpages.length > 0 ? (
+                  <ul
+                    id={`subpages-${module.id}`}
+                    className={`sidebar-subpages ${isOpen ? 'open' : 'collapsed'}`}
+                    hidden={!isOpen}
+                  >
+                    {module.subpages.map((subpage) => (
+                      <li key={subpage.id}>
+                        <Link href={`/${module.id}/${subpage.id}`} className="sidebar-sublink">
+                          {subpage.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </li>
+            )
+          })}
         </ul>
       </nav>
     </aside>

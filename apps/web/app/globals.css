@@ -55,17 +55,79 @@ body {
   gap: 8px;
 }
 
-.sidebar-link {
+.sidebar-link,
+.sidebar-sublink {
   display: block;
   text-decoration: none;
   color: #111827;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.sidebar-link:hover {
+.sidebar-link:hover,
+.sidebar-sublink:hover {
   background: #EEF3FF;
+}
+
+.sidebar-module-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sidebar-toggle {
+  border: none;
+  background: transparent;
+  color: #4C5B7A;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(14, 106, 255, 0.08);
+}
+
+.sidebar-toggle.open {
+  transform: rotate(180deg);
+}
+
+.sidebar-subpages {
+  list-style: none;
+  padding-left: 16px;
+  margin: 8px 0 0;
+  display: grid;
+  gap: 4px;
+}
+
+.sidebar-subpages.collapsed {
+  display: none;
+}
+
+.sidebar-sublink {
+  color: #4C5B7A;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .page-content {

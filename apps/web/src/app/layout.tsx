@@ -4,9 +4,6 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'CACSMS Contents',
   description: 'Autonomous AI Media Operating System',
-  icons: {
-    icon: '/favicon.svg',
-  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

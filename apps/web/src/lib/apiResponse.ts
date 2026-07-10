@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
-export type ApiSource = 'database' | 'mock'
-export type ApiStatus = 'success' | 'fallback' | 'error'
+export type ApiSource = 'database'
+export type ApiStatus = 'success' | 'error'
 
 export function dashboardResponse(source: ApiSource, data: unknown, status: ApiStatus = 'success') {
   return NextResponse.json({
@@ -13,5 +13,5 @@ export function dashboardResponse(source: ApiSource, data: unknown, status: ApiS
 }
 
 export function logDatabaseFallback(route: string, error: unknown) {
-  console.error(`[database-fallback] ${route}`, error)
+  console.error(`[database-error] ${route}`, error)
 }

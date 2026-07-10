@@ -17,23 +17,23 @@ export function SidebarFooter({
       <div className="sidebar-usage-card">
         <div className="sidebar-usage-row">
           <div>
-            <p className="sidebar-usage-label">AI Credits</p>
-            <strong>{variant === 'landing' ? '32,450 / 50,000' : '142 / 200'}</strong>
+            <p className="sidebar-usage-label">Live Usage</p>
+            <strong>Database required</strong>
           </div>
-          {variant === 'landing' && !collapsed ? <span className="sidebar-usage-percent">64%</span> : <Cpu size={18} />}
+          {variant === 'landing' && !collapsed ? <span className="sidebar-usage-percent">DB</span> : <Cpu size={18} />}
         </div>
         {!collapsed ? <div className="sidebar-usage-progress" /> : null}
       </div>
       {!collapsed ? (
         <div className="sidebar-profile-card">
-          <div className={variant === 'landing' ? 'sidebar-profile-photo' : 'sidebar-profile-avatar'}>{variant === 'landing' ? '' : user?.avatarInitials ?? 'JD'}</div>
+          <div className={variant === 'landing' ? 'sidebar-profile-photo' : 'sidebar-profile-avatar'}>{variant === 'landing' ? '' : user?.avatarInitials ?? '--'}</div>
           <div>
-            <p className="sidebar-profile-name">{user?.name ?? 'John Doe'}</p>
-            <p className="sidebar-profile-role">{user?.roleLabel ?? 'Super Administrator'}</p>
+            <p className="sidebar-profile-name">{user?.name ?? 'No live session'}</p>
+            <p className="sidebar-profile-role">{user?.roleLabel ?? 'Auth database required'}</p>
           </div>
         </div>
       ) : (
-        <div className="sidebar-profile-avatar collapsed">{user?.avatarInitials ?? 'JD'}</div>
+        <div className="sidebar-profile-avatar collapsed">{user?.avatarInitials ?? '--'}</div>
       )}
       <div className="sidebar-footer-actions">
         <button type="button" className="sidebar-footer-button">

@@ -1,0 +1,1 @@
+export const workflowTemplatesMockData = { summary: {}, libraryHealth: {}, categories: [], templates: [], templateDetails: {}, instantiationWizard: [], recommendations: [], validationResults: [], simulationResults: [], versions: [], comparison: [], performance: [], optimizationRecommendations: [], dependencyMap: [], finalOutputReadiness: [] }

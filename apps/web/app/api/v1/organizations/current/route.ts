@@ -1,6 +1,4 @@
+import { withErrorHandling } from '@/api/middleware/withErrorHandling'
 import { organizationsController } from '@/api/controllers/organizationsController'
 
-export async function GET() {
-  return organizationsController.current()
-}
-
+export const GET = withErrorHandling(() => organizationsController.current())

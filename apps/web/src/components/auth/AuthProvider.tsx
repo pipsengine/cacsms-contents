@@ -1,13 +1,7 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo } from 'react'
 import type { CurrentOrganization, CurrentUser } from '@/services/sessionService'
-
-type PermissionPayload = {
-  roles: string[]
-  roleLabel: string
-  permissions: string[]
-}
 
 type AuthContextValue = {
   user: CurrentUser | null
@@ -24,55 +18,40 @@ type AuthContextValue = {
     resource: string
     resourceId?: string
     permission?: string
-    status: 'success' | 'denied' | 'blocked' | 'expired' | 'fallback'
+    status: 'success' | 'denied' | 'blocked' | 'expired' | 'error'
   }) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-async function readApi<T>(url: string) {
-  const response = await fetch(url, { cache: 'no-store' })
-  if (!response.ok) throw new Error(`Failed to load ${url}`)
-  const payload = (await response.json()) as { data: T }
-  return payload.data
+const buildModeOrganization: CurrentOrganization = {
+  id: '9AF6E759-33AD-4BA0-A04E-83660C92E9F5',
+  name: 'AI Media Group',
+  slug: 'ai-media-group',
+  brandName: 'AI Media Group',
+  teamName: 'Build Team',
 }
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<CurrentUser | null>(null)
-  const [organization, setOrganization] = useState<CurrentOrganization | null>(null)
-  const [permissionPayload, setPermissionPayload] = useState<PermissionPayload | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [sessionValid, setSessionValid] = useState(true)
+const buildModeUser: CurrentUser = {
+  id: '00000000-0000-0000-0000-000000000001',
+  name: 'Build Mode User',
+  email: 'build-mode@cacsms.local',
+  avatarInitials: 'BM',
+  roles: ['builder', 'super_admin'],
+  roleLabel: 'Build Mode',
+  organizationId: buildModeOrganization.id,
+}
 
+const buildModePermissions = ['*']
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refresh = useCallback(async () => {
-    try {
-      const [currentUser, currentOrganization, currentPermissions] = await Promise.all([
-        readApi<CurrentUser>('/api/v1/auth/me'),
-        readApi<CurrentOrganization>('/api/v1/organizations/current'),
-        readApi<PermissionPayload>('/api/v1/permissions/me'),
-      ])
-      setUser(currentUser)
-      setOrganization(currentOrganization)
-      setPermissionPayload(currentPermissions)
-      setSessionValid(true)
-    } catch {
-      setSessionValid(false)
-    } finally {
-      setLoading(false)
-    }
+    return Promise.resolve()
   }, [])
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void refresh()
-    }, 0)
-
-    return () => window.clearTimeout(timer)
-  }, [refresh])
-
-  const permissions = useMemo(() => permissionPayload?.permissions ?? [], [permissionPayload?.permissions])
-  const roles = useMemo(() => permissionPayload?.roles ?? [], [permissionPayload?.roles])
-  const roleLabel = permissionPayload?.roleLabel ?? user?.roleLabel ?? 'Unknown Role'
+  const permissions = useMemo(() => buildModePermissions, [])
+  const roles = useMemo(() => buildModeUser.roles, [])
+  const roleLabel = buildModeUser.roleLabel
 
   const canAccess = useCallback(
     (permission?: string) => !permission || permissions.includes('*') || permissions.includes(permission),
@@ -87,8 +66,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             ...input,
-            userId: user?.id,
-            organizationId: organization?.id,
+            userId: buildModeUser.id,
+            organizationId: buildModeOrganization.id,
             timestamp: new Date().toISOString(),
           }),
         })
@@ -96,23 +75,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Audit should never break UI flows.
       }
     },
-    [organization, user]
+    []
   )
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      user,
-      organization,
+      user: buildModeUser,
+      organization: buildModeOrganization,
       roles,
       roleLabel,
       permissions,
-      loading,
-      sessionValid,
+      loading: false,
+      sessionValid: true,
       refresh,
       canAccess,
       audit,
     }),
-    [audit, canAccess, loading, organization, permissions, refresh, roleLabel, roles, sessionValid, user]
+    [audit, canAccess, permissions, refresh, roleLabel, roles]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

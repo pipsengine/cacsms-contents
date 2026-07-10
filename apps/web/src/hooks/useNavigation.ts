@@ -40,9 +40,9 @@ function filterSections(sections: NavSection[], canAccess: (permission?: string)
 
 export function useNavigation() {
   const { canAccess, loading: authLoading, audit } = useAuth()
-  const [sections, setSections] = useState<NavSection[]>(navigationSections)
+  const [sections, setSections] = useState<NavSection[]>([])
   const [loading, setLoading] = useState(true)
-  const [source, setSource] = useState<'database' | 'mock' | 'static'>('static')
+  const [source, setSource] = useState<'database' | 'empty'>('empty')
 
   useEffect(() => {
     let mounted = true
@@ -52,19 +52,19 @@ export function useNavigation() {
       try {
         const response = await fetch('/api/v1/navigation', { cache: 'no-store' })
         if (!response.ok) throw new Error('Navigation API failed')
-        const payload = (await response.json()) as { data?: NavSection[]; metadata?: { source?: 'database' | 'mock' } }
-        const hydrated = hydrateNavigationIcons(payload.data?.length ? payload.data : navigationSections)
+        const payload = (await response.json()) as { data?: NavSection[]; metadata?: { source?: 'database' } }
+        const hydrated = hydrateNavigationIcons(payload.data ?? [])
         if (mounted) {
           setSections(hydrated)
-          setSource(payload.metadata?.source ?? 'mock')
+          setSource(payload.metadata?.source ?? 'empty')
         }
         await audit({ action: 'navigation.loaded', resource: 'navigation', permission: 'navigation:read', status: 'success' })
       } catch {
         if (mounted) {
-          setSections(navigationSections)
-          setSource('static')
+          setSections([])
+          setSource('empty')
         }
-        await audit({ action: 'navigation.loaded', resource: 'navigation', permission: 'navigation:read', status: 'fallback' })
+        await audit({ action: 'navigation.loaded', resource: 'navigation', permission: 'navigation:read', status: 'blocked' })
       } finally {
         if (mounted) setLoading(false)
       }
@@ -82,9 +82,8 @@ export function useNavigation() {
   const filteredSections = useMemo(() => filterSections(sections, canAccess), [canAccess, sections])
 
   return {
-    sections: filteredSections.length ? filteredSections : navigationSections,
+    sections: filteredSections,
     loading: loading || authLoading,
     source,
   }
 }
-

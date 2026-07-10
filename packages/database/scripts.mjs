@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import sql from 'mssql'
+import sql from 'mssql/msnodesqlv8.js'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -35,9 +35,10 @@ function getDatabaseConfig() {
   return {
     server: process.env.MSSQL_SERVER ?? 'localhost',
     port: Number(process.env.MSSQL_PORT ?? 1433),
-    database: process.env.MSSQL_DATABASE ?? 'db_cacsms-contents',
+    database: process.env.MSSQL_DATABASE ?? 'db_Cacsms-Contents',
     user: process.env.MSSQL_USER ?? '',
     password: process.env.MSSQL_PASSWORD ?? '',
+    trustedConnection: bool(process.env.MSSQL_TRUSTED_CONNECTION, !(process.env.MSSQL_USER && process.env.MSSQL_PASSWORD)),
     encrypt: bool(process.env.MSSQL_ENCRYPT, false),
     trustServerCertificate: bool(process.env.MSSQL_TRUST_SERVER_CERTIFICATE, true),
   }
@@ -45,6 +46,19 @@ function getDatabaseConfig() {
 
 function getSqlConfig(databaseOverride) {
   const config = getDatabaseConfig()
+  if (config.trustedConnection) {
+    return {
+      connectionString: [
+        'Driver={ODBC Driver 18 for SQL Server}',
+        `Server=${config.port ? `${config.server},${config.port}` : config.server}`,
+        `Database=${databaseOverride ?? config.database}`,
+        'Trusted_Connection=Yes',
+        `Encrypt=${config.encrypt ? 'Yes' : 'No'}`,
+        `TrustServerCertificate=${config.trustServerCertificate ? 'Yes' : 'No'}`,
+      ].join(';'),
+    }
+  }
+
   return {
     server: config.server,
     port: config.port,

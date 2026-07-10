@@ -1,19 +1,16 @@
 import { navigationService } from '@/services/navigationService'
-import { apiDatabase, apiFallback } from '@/shared/api/apiResponse'
+import { apiDatabase } from '@/shared/api/apiResponse'
 import { sessionService } from '@/services/sessionService'
 
 export const navigationController = {
   async getNavigation() {
-    const permissions = await sessionService.getCurrentPermissions()
-    const result = await navigationService.getNavigationTree(permissions.data.permissions)
+    const result = await navigationService.getNavigationTree([])
     await sessionService.logActivity({
       action: 'navigation.loaded',
       resource: 'navigation',
       permission: 'navigation:read',
-      status: result.source === 'database' ? 'success' : 'fallback',
+      status: 'success',
     })
-    return result.source === 'database'
-      ? apiDatabase(result.data, 'Navigation loaded from database.')
-      : apiFallback(result.data)
+    return apiDatabase(result.data, 'Navigation loaded from database.')
   },
 }

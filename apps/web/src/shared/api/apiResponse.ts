@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createRequestId } from '@/shared/utils/requestId'
 
-export type ApiResponseStatus = 'success' | 'fallback' | 'error'
+export type ApiResponseStatus = 'success' | 'error'
 
 export type ApiResponseEnvelope<T> = {
   success: boolean
@@ -37,15 +37,6 @@ export function apiResponse<T>({
   }
 
   return NextResponse.json(body, { status: httpStatus })
-}
-
-export function apiFallback<T>(data: T, message = 'Database unavailable. Returned fallback data.') {
-  return apiResponse({
-    data,
-    message,
-    status: 'fallback',
-    metadata: { source: 'mock' },
-  })
 }
 
 export function apiDatabase<T>(data: T, message = 'Loaded from database.') {

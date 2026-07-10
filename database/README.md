@@ -30,6 +30,7 @@ Core engine migrations are additive and run in filename order. The current enter
 
 - `001_initial_schema.sql`
 - `002_enterprise_core_engines.sql`
+- `003_workflow_engine_runtime.sql`
 
 Seed files run in filename order and include the 30-module navigation seed plus System Monitoring pages.
 

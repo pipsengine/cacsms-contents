@@ -1,0 +1,1 @@
+export const workflowTriggersMockData = { summary: {}, engineStatus: {}, lifecycle: [], types: [], triggers: [], triggerDetails: {}, eventStream: [], deadLetters: [], validationResults: [], testResults: [], conflicts: [], performance: [], recommendations: [], finalOutputLinkage: [] }

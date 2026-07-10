@@ -1,4 +1,4 @@
-import { apiFallback, apiResponse } from '@/shared/api/apiResponse'
+import { apiDatabase, apiResponse } from '@/shared/api/apiResponse'
 import { sessionService, type AuditActivityInput } from '@/services/sessionService'
 
 export const activityAuditController = {
@@ -10,7 +10,7 @@ export const activityAuditController = {
         ipAddress: request.headers.get('x-forwarded-for') ?? body.ipAddress,
         userAgent: request.headers.get('user-agent') ?? body.userAgent,
       })
-      return apiFallback(payload, 'Audit activity accepted with mock session context.')
+      return apiDatabase(payload, 'Audit activity accepted with live session context.')
     } catch {
       return apiResponse({
         data: null,
@@ -21,4 +21,3 @@ export const activityAuditController = {
     }
   },
 }
-

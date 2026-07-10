@@ -6,13 +6,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "iis:start": "next start -H 127.0.0.1 -p 3001",
     "start": "next start",
     "lint": "eslint ."
   },
   "dependencies": {
     "@cacsms/database": "file:../../packages/database",
+    "@xyflow/react": "^12.11.2",
     "bcryptjs": "^3.0.3",
+    "bullmq": "^5.80.0",
     "framer-motion": "^11.0.0",
+    "ioredis": "^5.11.1",
     "jose": "^6.2.3",
     "lucide-react": "^0.483.0",
     "next": "^16.0.0",

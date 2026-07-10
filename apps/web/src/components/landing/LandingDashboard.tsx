@@ -1,90 +1,190 @@
+'use client'
+
 import {
   BarChart3,
-  Bell,
   Bot,
   CalendarDays,
-  CheckCircle2,
-  CircleHelp,
-  Clapperboard,
   Clock3,
   FileText,
-  Image,
   Play,
-  Plus,
+  Square,
   Search,
   Send,
   Sparkles,
   Video,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-const metrics = [
-  ['Total Content', '12,846', '+18.6% vs last 7 days', FileText, 'purple'],
-  ['Published Content', '8,642', '+22.4% vs last 7 days', Send, 'green'],
-  ['Total Views', '2.45M', '+16.3% vs last 7 days', Sparkles, 'orange'],
-  ['Engagement Rate', '8.74%', '+12.5% vs last 7 days', BarChart3, 'blue'],
-  ['AI Generations', '24,562', '+25.8% vs last 7 days', Bot, 'pink'],
-] as const
+type WorkflowStepState = {
+  id: string
+  stageName: string
+  status: string
+  progressPercent: number
+}
 
-const startupSteps = [
-  ['Core Services', 'Initializing core system services', '100%', 'complete'],
-  ['Database & Storage', 'Connecting and verifying databases', '100%', 'complete'],
-  ['AI Services', 'Starting AI models and inference engines', '85%', 'active'],
-  ['Content Pipeline', 'Loading content pipeline and processors', '62%', 'warning'],
-  ['Workflow Engine', 'Activating workflow orchestrator', '40%', 'pending'],
-  ['Integrations', 'Connecting external integrations', '0%', 'idle'],
-  ['Monitoring', 'Starting monitoring and alerting', '0%', 'idle'],
-] as const
+type WorkflowInstanceState = {
+  id: string
+  workflowCode: string
+  workflowName: string
+  status: string
+  progressPercent: number
+  currentStage?: string | null
+  startedAt?: string | null
+  createdAt?: string | null
+}
+
+type WorkflowSnapshot = {
+  instance: WorkflowInstanceState
+  steps: WorkflowStepState[]
+  logs: { message: string; createdAt: string }[]
+}
+
+type SystemStatus = {
+  status?: string
+  healthPercent?: number
+  readinessPercent?: number
+  activeInstance?: WorkflowInstanceState | null
+}
+
+type ApiEnvelope<T> = {
+  success: boolean
+  message: string
+  data: T
+}
 
 const quickActions = [
   ['Create Content', FileText],
   ['Research Topic', Search],
   ['Generate Script', Sparkles],
   ['Create Video', Video],
-  ['Design Thumbnail', Image],
   ['Schedule Content', CalendarDays],
   ['View Analytics', BarChart3],
   ['AI Agent Chat', Bot],
 ] as const
 
-const pipeline = [
-  ['Ideation', '324', 'Ideas', Bot, 'purple'],
-  ['Research', '256', 'In Progress', Search, 'blue'],
-  ['Production', '189', 'In Progress', Sparkles, 'orange'],
-  ['Review', '143', 'Pending', CheckCircle2, 'orange'],
-  ['Approval', '98', 'Approved', Send, 'green'],
-  ['Publishing', '76', 'Scheduled', Clapperboard, 'cyan'],
-  ['Analytics', '1,247', 'Live', BarChart3, 'blue'],
-  ['Learning', '89', 'Analyzing', Bot, 'pink'],
-] as const
+const nigeriaTimeZone = 'Africa/Lagos'
 
-const recentWorkflows = [
-  ['AI Tools Video Series', 'Completed', '2 min ago'],
-  ['Product Launch Campaign', 'In Progress', '15 min ago'],
-  ['Weekly Content Batch', 'Completed', '1 hour ago'],
-  ['Social Media Package', 'In Progress', '2 hours ago'],
-  ['Blog Content Strategy', 'Completed', '3 hours ago'],
-] as const
+function formatTime(value?: string | null) {
+  if (!value) return '-'
+  return new Intl.DateTimeFormat('en-NG', { timeZone: nigeriaTimeZone, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(value))
+}
 
 export function LandingDashboard() {
+  const [startup, setStartup] = useState<WorkflowSnapshot | null>(null)
+  const [instances, setInstances] = useState<WorkflowInstanceState[]>([])
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null)
+  const [message, setMessage] = useState('Waiting for live database data')
+  const [now, setNow] = useState(() => Date.now())
+
+  const startupSteps = useMemo(() => {
+    return startup?.steps ?? []
+  }, [startup])
+
+  const loadLiveData = useCallback(async () => {
+    try {
+      const [statusResponse, instancesResponse] = await Promise.all([
+        fetch('/api/v1/system/status', { cache: 'no-store' }),
+        fetch('/api/v1/workflows/instances', { cache: 'no-store' }),
+      ])
+      const statusPayload = (await statusResponse.json()) as ApiEnvelope<SystemStatus>
+      const instancesPayload = (await instancesResponse.json()) as ApiEnvelope<WorkflowInstanceState[]>
+
+      if (!statusResponse.ok || !statusPayload.success) throw new Error(statusPayload.message)
+      if (!instancesResponse.ok || !instancesPayload.success) throw new Error(instancesPayload.message)
+
+      setSystemStatus(statusPayload.data)
+      setInstances(instancesPayload.data)
+      const activeStartup = instancesPayload.data.find((instance) => instance.workflowCode === 'SYSTEM_STARTUP' && ['queued', 'running', 'paused'].includes(instance.status))
+      if (activeStartup) {
+        const snapshotResponse = await fetch(`/api/v1/workflows/instances/${activeStartup.id}`, { cache: 'no-store' })
+        const snapshotPayload = (await snapshotResponse.json()) as ApiEnvelope<WorkflowSnapshot>
+        if (snapshotResponse.ok && snapshotPayload.success) setStartup(snapshotPayload.data)
+      }
+      setMessage('Live database data loaded')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Live database data unavailable')
+    }
+  }, [])
+
+  useEffect(() => {
+    const initialLoad = setTimeout(() => void loadLiveData(), 0)
+    const clock = setInterval(() => setNow(Date.now()), 1000)
+    const poll = setInterval(() => void loadLiveData(), 5000)
+    const stream = new EventSource('/api/v1/system/startup-stream')
+    const update = (event: Event) => {
+      const snapshot = JSON.parse((event as MessageEvent).data) as WorkflowSnapshot
+      setStartup(snapshot)
+      setMessage(snapshot.instance.currentStage ?? snapshot.instance.status)
+      void loadLiveData()
+    }
+    ;['workflow.instance.created', 'workflow.started', 'workflow.stage.started', 'workflow.stage.progress', 'workflow.stage.completed', 'workflow.completed', 'workflow.paused', 'workflow.resumed', 'workflow.cancelled', 'workflow.failed'].forEach((eventName) => {
+      stream.addEventListener(eventName, update)
+    })
+    return () => {
+      clearInterval(clock)
+      clearInterval(poll)
+      clearTimeout(initialLoad)
+      stream.close()
+    }
+  }, [loadLiveData])
+
+  async function runAction(action: 'start' | 'stop') {
+    const response = await fetch(`/api/v1/system/${action}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ requestedBy: 'dashboard' }),
+    })
+    const payload = (await response.json()) as ApiEnvelope<WorkflowSnapshot>
+    if (!response.ok || !payload.success) {
+      setMessage(payload.message ?? 'Live workflow operation failed.')
+      return
+    }
+    setStartup(payload.data)
+    setMessage(payload.message)
+    await loadLiveData()
+  }
+
+  const activeInstance = startup?.instance ?? systemStatus?.activeInstance ?? null
+  const systemState = String(systemStatus?.status ?? '').toLowerCase()
+  const activeState = String(activeInstance?.status ?? '').toLowerCase()
+  const systemIsRunning = ['operational', 'starting', 'running', 'stopping'].includes(systemState) || ['queued', 'starting', 'running', 'stopping'].includes(activeState)
+  const toggleAction = systemIsRunning ? 'stop' : 'start'
+  const ToggleIcon = systemIsRunning ? Square : Play
+  const overallProgress = Math.round(activeInstance?.progressPercent ?? systemStatus?.readinessPercent ?? 0)
+  const startedAt = activeInstance?.startedAt ? new Date(activeInstance.startedAt).getTime() : null
+  const elapsedSeconds = startedAt ? Math.max(0, Math.round((now - startedAt) / 1000)) : 0
+  const elapsed = `${String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:${String(elapsedSeconds % 60).padStart(2, '0')}`
+  const completedWorkflows = instances.filter((instance) => instance.status === 'completed').length
+  const runningWorkflows = instances.filter((instance) => ['queued', 'running', 'paused'].includes(instance.status)).length
+  const failedWorkflows = instances.filter((instance) => instance.status === 'failed').length
+  const liveMetrics: { label: string; value: string; note: string; Icon: LucideIcon; tone: string }[] = [
+    { label: 'Workflow Instances', value: String(instances.length), note: 'Rows from workflow_instances', Icon: FileText, tone: 'purple' },
+    { label: 'Completed', value: String(completedWorkflows), note: 'Completed workflow instances', Icon: Send, tone: 'green' },
+    { label: 'Running', value: String(runningWorkflows), note: 'Queued/running/paused instances', Icon: Sparkles, tone: 'orange' },
+    { label: 'Failed', value: String(failedWorkflows), note: 'Failed workflow instances', Icon: BarChart3, tone: 'blue' },
+    { label: 'Current Progress', value: `${overallProgress}%`, note: activeInstance?.workflowName ?? 'No active workflow', Icon: Bot, tone: 'pink' },
+  ]
+
   return (
     <div className="landing-dashboard">
       <header className="landing-topbar">
         <div>
-          <h1>Welcome back, John! <span aria-hidden="true">{'\uD83D\uDC4B'}</span></h1>
-          <p>AI Media Operating System Dashboard</p>
+          <h1>CACSMS Contents</h1>
+          <p>Live production dashboard</p>
         </div>
         <div className="landing-search">
           <Search size={18} />
-          <span>Search modules, content, workflows...</span>
-          <kbd>{'\u2318'}K</kbd>
+          <span>Search live modules, content, workflows...</span>
         </div>
-        <button type="button" className="landing-create"><Plus size={18} />Create</button>
-        <button type="button" className="landing-icon-button"><Bell size={18} /><b>12</b></button>
-        <button type="button" className="landing-icon-button"><CircleHelp size={18} /></button>
-        <div className="landing-avatar">JD</div>
+        <div className="landing-service-actions">
+          <button type="button" className={systemIsRunning ? 'stop' : 'start'} onClick={() => runAction(toggleAction)}>
+            <ToggleIcon size={15} />{systemIsRunning ? 'Stop' : 'Start'}
+          </button>
+        </div>
         <div className="landing-date-row">
-          <span><CalendarDays size={15} />May 31, 2025</span>
-          <span><Clock3 size={15} />10:30 AM</span>
+          <span><CalendarDays size={15} />{new Intl.DateTimeFormat('en-NG', { timeZone: nigeriaTimeZone, dateStyle: 'medium' }).format(new Date(now))}</span>
+          <span><Clock3 size={15} />{new Intl.DateTimeFormat('en-NG', { timeZone: nigeriaTimeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' }).format(new Date(now))}</span>
         </div>
       </header>
 
@@ -92,26 +192,26 @@ export function LandingDashboard() {
         <article className="landing-card landing-status-card">
           <div className="landing-card-head">
             <h2>System Overall Status</h2>
-            <span>All Systems Operational</span>
+            <span>{systemStatus?.status ?? 'Database unavailable'}</span>
           </div>
           <div className="landing-status-body">
-            <div className="landing-health-ring"><b>92%</b><small>Healthy</small></div>
+            <div className="landing-health-ring"><b>{Math.round(systemStatus?.healthPercent ?? overallProgress)}%</b><small>Health</small></div>
             <div className="landing-checks">
-              {['Core Services', 'AI Services', 'Database', 'Storage', 'CDN & Delivery', 'Integrations'].map((item) => (
-                <p key={item}><i />{item}<b>Operational</b></p>
-              ))}
+              <p><i />Readiness<b>{Math.round(systemStatus?.readinessPercent ?? 0)}%</b></p>
+              <p><i />Active Workflow<b>{activeInstance?.workflowName ?? 'None'}</b></p>
+              <p><i />Current Stage<b>{activeInstance?.currentStage ?? '-'}</b></p>
+              <p><i />Last Update<b>{formatTime(activeInstance?.createdAt)}</b></p>
             </div>
           </div>
-          <footer><span>Last checked: 10:30:15 AM</span><a>View System Health {'\u2192'}</a></footer>
+          <footer><span>{message}</span><span>Autonomous service mode</span></footer>
         </article>
 
-        {metrics.map(([label, value, change, Icon, tone]) => (
+        {liveMetrics.map(({ label, value, note, Icon, tone }) => (
           <article key={label} className={`landing-metric-card ${tone}`}>
             <span><Icon size={22} /></span>
             <small>{label}</small>
             <h2>{value}</h2>
-            <p>{change}</p>
-            <svg viewBox="0 0 120 48" aria-hidden="true"><polyline points="0,40 15,31 27,18 42,35 55,24 70,39 84,20 98,27 112,12 120,16" /></svg>
+            <p>{note}</p>
           </article>
         ))}
       </section>
@@ -119,55 +219,68 @@ export function LandingDashboard() {
       <section className="landing-startup-layout">
         <article className="landing-card landing-startup">
           <div className="landing-card-head">
-            <div><h2>System Startup Sequence</h2><p>Progressive startup of all modules and services</p></div>
-            <div className="landing-startup-actions"><button type="button">Stop Startup</button><span>Elapsed Time: 02:14</span><button type="button">View Logs</button></div>
+            <div><h2>System Startup Sequence</h2><p>Live stages from workflow_instance_steps</p></div>
+            <div className="landing-startup-actions"><span>Elapsed Time: {elapsed}</span></div>
           </div>
           <div className="landing-startup-steps">
-            {startupSteps.map(([title, copy, percent, state], index) => (
-              <article key={title} className={`landing-step ${state}`}>
-                <b>{index + 1}</b>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-                <strong>{percent}</strong>
-                <div><i style={{ width: percent }} /></div>
-                <em>{state === 'complete' ? '\u2713' : state === 'idle' ? '\u25F7' : ''}</em>
-              </article>
-            ))}
+            {startupSteps.length === 0 ? (
+              <article className="landing-step idle"><b>0</b><h3>No active startup workflow</h3><p>{message}</p><strong>0%</strong><div><i style={{ width: '0%' }} /></div></article>
+            ) : startupSteps.map((step, index) => {
+              const state = step.status === 'completed' ? 'complete' : step.status === 'running' ? 'active' : step.status === 'failed' ? 'warning' : 'idle'
+              return (
+                <article key={step.id} className={`landing-step ${state}`}>
+                  <b>{index + 1}</b>
+                  <h3>{step.stageName}</h3>
+                  <p>{step.status}</p>
+                  <strong>{Math.round(step.progressPercent)}%</strong>
+                  <div><i style={{ width: `${step.progressPercent}%` }} /></div>
+                  <em>{state === 'complete' ? '\u2713' : ''}</em>
+                </article>
+              )
+            })}
           </div>
-          <div className="landing-overall"><span>Overall Startup Progress</span><div><i /></div><b>57%</b><small>Estimated Time Remaining: 01:42</small></div>
+          <div className="landing-overall"><span>Overall Startup Progress</span><div><i style={{ width: `${overallProgress}%` }} /></div><b>{overallProgress}%</b><small>{activeInstance?.currentStage ?? message}</small></div>
         </article>
 
         <article className="landing-card landing-details">
           <h2>Startup Details</h2>
-          {startupSteps.map(([title, , , state], index) => (
-            <p key={title}><i className={state} />{title}<b>{state === 'complete' ? 'Completed' : state === 'idle' ? 'Pending' : 'In Progress'}</b><span>{index < 4 ? `0${index}:${index === 0 ? '18' : index === 1 ? '22' : index === 2 ? '05' : '45'}` : '--:--'}</span></p>
+          {startupSteps.length === 0 ? <p><i className="idle" />No database-backed startup steps<b>Idle</b><span>-</span></p> : startupSteps.map((step) => (
+            <p key={step.id}><i className={step.status === 'completed' ? 'complete' : step.status === 'running' ? 'active' : 'idle'} />{step.stageName}<b>{step.status}</b><span>{Math.round(step.progressPercent)}%</span></p>
           ))}
-          <div className="landing-toggle">Auto-start enabled<span /></div>
+          <div className="landing-toggle">Live database mode<span /></div>
         </article>
       </section>
 
       <section className="landing-middle-grid">
         <article className="landing-card landing-quick">
-          <h2>Quick Start</h2><p>Jump into your most important workflows</p>
-          <div>{quickActions.map(([label, Icon]) => <button type="button" key={label}><Icon size={25} />{label}</button>)}</div>
+          <h2>Autonomous Queues</h2><p>Service-managed workflow capabilities</p>
+          <div>{quickActions.map(([label, Icon]) => <span key={label}><Icon size={25} />{label}</span>)}</div>
         </article>
         <article className="landing-card landing-pipeline">
-          <div className="landing-card-head"><div><h2>Content Pipeline Overview</h2><p>Real-time overview of content across the pipeline</p></div><button type="button">All Workflows</button></div>
-          <div className="landing-pipe-items">{pipeline.map(([label, count, status, Icon, tone]) => <div key={label} className={tone}><Icon size={28} /><b>{count}</b><span>{label}</span><small>{status}</small></div>)}</div>
-          <div className="landing-multi-bar" />
+          <div className="landing-card-head"><div><h2>Workflow Instances</h2><p>Latest rows from the workflow database</p></div></div>
+          <div className="landing-pipe-items">
+            {instances.slice(0, 8).map((instance) => (
+              <div key={instance.id} className="blue"><Video size={28} /><b>{Math.round(instance.progressPercent)}%</b><span>{instance.workflowName}</span><small>{instance.status}</small></div>
+            ))}
+          </div>
+          {instances.length === 0 ? <p>No workflow instances found in the database.</p> : null}
         </article>
         <article className="landing-card landing-controls">
-          <h2>System Controls</h2><p>Control and manage your AI Media OS</p>
-          <ul>{['System Status', 'AI Services', 'Content Pipeline', 'Automation Engines', 'Scheduled Jobs', 'Notifications'].map((item, index) => <li key={item}>{item}<span>{index === 4 ? 'Pending' : index === 5 ? 'Enabled' : 'Running'}</span></li>)}</ul>
-          <div><button type="button"><Play size={15} />Start All Services</button><button type="button">Stop All Services</button></div>
+          <h2>System State</h2><p>Live workflow execution state</p>
+          <ul>
+            <li>System Status<span>{systemStatus?.status ?? 'Unavailable'}</span></li>
+            <li>Active Workflow<span>{activeInstance?.status ?? 'None'}</span></li>
+            <li>Readiness<span>{Math.round(systemStatus?.readinessPercent ?? 0)}%</span></li>
+            <li>Workflow Count<span>{instances.length}</span></li>
+          </ul>
         </article>
       </section>
 
       <section className="landing-bottom-grid">
-        <article className="landing-card"><h2>Top Performing Content</h2><p>Based on engagement in the last 7 days</p><table><tbody>{['AI Tools Ultimate Guide 2025', 'How AI Will Change Content Creation', 'Content Strategy for 2025'].map((title, index) => <tr key={title}><td>{title}</td><td>{index === 1 ? 'Blog' : 'Video'}</td><td>{['128.4K', '96.2K', '75.1K'][index]}</td><td>{['8.7%', '7.3%', '6.9%'][index]}</td><td>{'\u2197'}</td></tr>)}</tbody></table></article>
-        <article className="landing-card landing-workflows"><h2>Recent Workflows <a>View All</a></h2><p>Your recently executed workflows</p>{recentWorkflows.map(([title, status, time]) => <div key={title}><span>{title}</span><b className={status === 'Completed' ? 'complete' : 'progress'}>{status}</b><small>{time}</small></div>)}</article>
-        <article className="landing-card landing-activity"><h2>AI Agents Activity <a>View All</a></h2>{['Research Agent', 'Writing Agent', 'SEO Agent', 'Video Agent', 'Analytics Agent'].map((agent) => <p key={agent}>{agent}<span>Active</span></p>)}</article>
-        <article className="landing-card landing-feed"><h2>System Activity Feed <a>View All</a></h2>{['10:30 AM - AI content generated successfully', '10:28 AM - Content published to YouTube', '10:25 AM - New user registration', '10:22 AM - Workflow completed', '10:20 AM - Database backup completed'].map((item) => <p key={item}>{item}</p>)}</article>
+        <article className="landing-card"><h2>Top Performing Content</h2><p>Connect production content analytics tables to populate this panel.</p></article>
+        <article className="landing-card landing-workflows"><h2>Recent Workflows</h2><p>Live workflow_instances rows</p>{instances.slice(0, 5).map((instance) => <div key={instance.id}><span>{instance.workflowName}</span><b className={instance.status === 'completed' ? 'complete' : 'progress'}>{instance.status}</b><small>{formatTime(instance.createdAt)}</small></div>)}</article>
+        <article className="landing-card landing-activity"><h2>AI Agents Activity</h2><p>Connect production agent_runs data to populate this panel.</p></article>
+        <article className="landing-card landing-feed"><h2>System Activity Feed</h2>{startup?.logs.slice(0, 5).map((log) => <p key={`${log.createdAt}-${log.message}`}>{formatTime(log.createdAt)} - {log.message}</p>) ?? <p>No workflow logs loaded from the database.</p>}</article>
       </section>
     </div>
   )

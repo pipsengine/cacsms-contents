@@ -1,0 +1,17 @@
+export const automationRulesMockData = {
+  summary: {},
+  engineStatus: {},
+  lifecycle: [],
+  categories: [],
+  rules: [],
+  ruleDetails: {},
+  executions: [],
+  decisionTrace: [],
+  conflicts: [],
+  validationResults: [],
+  simulationResults: [],
+  performance: [],
+  recommendations: [],
+  versionHistory: [],
+  finalOutputImpact: [],
+}

@@ -1,5 +1,4 @@
+import { withErrorHandling } from '@/api/middleware/withErrorHandling'
 import { navigationController } from '@/api/controllers/navigationController'
 
-export async function GET() {
-  return navigationController.getNavigation()
-}
+export const GET = withErrorHandling(() => navigationController.getNavigation())

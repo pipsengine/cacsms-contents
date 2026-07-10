@@ -25,55 +25,6 @@ export type CurrentSession = {
   sessionValid: boolean
 }
 
-export const mockPermissions = [
-  '*',
-  'module.view',
-  'module.create',
-  'module.edit',
-  'module.delete',
-  'module.approve',
-  'module.publish',
-  'module.export',
-  'module.run',
-  'module.manage',
-  'system_monitoring.view',
-  'system_monitoring.run_validation',
-  'system_monitoring.export_report',
-  'system_monitoring.restart_service',
-  'workflow_automation.view',
-  'workflow_automation.execute',
-  'workflow_automation.approve',
-  'ai_agents.view',
-  'ai_agents.run',
-  'ai_agents.configure',
-  'content_production.view',
-  'content_production.generate',
-  'content_production.approve',
-  'publishing_center.view',
-  'publishing_center.publish',
-]
-
-export const mockSession: CurrentSession = {
-  sessionValid: true,
-  user: {
-    id: 'mock-user-john-doe',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    avatarInitials: 'JD',
-    roles: ['super_administrator'],
-    roleLabel: 'Super Administrator',
-    organizationId: 'mock-org-ai-media-group',
-  },
-  organization: {
-    id: 'mock-org-ai-media-group',
-    name: 'AI Media Group',
-    slug: 'ai-media-group',
-    brandName: 'CACSMS Contents',
-    teamName: 'Enterprise Plan',
-  },
-  permissions: mockPermissions,
-}
-
 export type AuditActivityInput = {
   userId?: string
   organizationId?: string
@@ -81,46 +32,63 @@ export type AuditActivityInput = {
   resource: string
   resourceId?: string
   permission?: string
-  status: 'success' | 'denied' | 'blocked' | 'expired' | 'fallback'
+  status: 'success' | 'denied' | 'blocked' | 'expired' | 'error'
   ipAddress?: string
   userAgent?: string
   timestamp?: string
 }
 
+export const buildModeOrganization: CurrentOrganization = {
+  id: '9AF6E759-33AD-4BA0-A04E-83660C92E9F5',
+  name: 'AI Media Group',
+  slug: 'ai-media-group',
+  brandName: 'AI Media Group',
+  teamName: 'Build Team',
+}
+
+export const buildModeUser: CurrentUser = {
+  id: '00000000-0000-0000-0000-000000000001',
+  name: 'Build Mode User',
+  email: 'build-mode@cacsms.local',
+  avatarInitials: 'BM',
+  roles: ['builder', 'super_admin'],
+  roleLabel: 'Build Mode',
+  organizationId: buildModeOrganization.id,
+}
+
+export const buildModePermissions = ['*']
+
 export const sessionService = {
   async getCurrentSession() {
-    return { source: 'mock' as const, data: mockSession }
+    return {
+      user: buildModeUser,
+      organization: buildModeOrganization,
+      permissions: buildModePermissions,
+      sessionValid: true,
+    } satisfies CurrentSession
   },
 
   async getCurrentUser() {
-    const session = await this.getCurrentSession()
-    return { source: session.source, data: session.data.user }
+    return buildModeUser
   },
 
   async getCurrentOrganization() {
-    const session = await this.getCurrentSession()
-    return { source: session.source, data: session.data.organization }
+    return buildModeOrganization
   },
 
   async getCurrentPermissions() {
-    const session = await this.getCurrentSession()
     return {
-      source: session.source,
-      data: {
-        userId: session.data.user.id,
-        organizationId: session.data.organization.id,
-        roles: session.data.user.roles,
-        roleLabel: session.data.user.roleLabel,
-        permissions: session.data.permissions,
-      },
+      roles: buildModeUser.roles,
+      roleLabel: buildModeUser.roleLabel,
+      permissions: buildModePermissions,
     }
   },
 
   async logActivity(input: AuditActivityInput) {
     const payload = {
       ...input,
-      userId: input.userId ?? mockSession.user.id,
-      organizationId: input.organizationId ?? mockSession.organization.id,
+      userId: input.userId,
+      organizationId: input.organizationId,
       timestamp: input.timestamp ?? new Date().toISOString(),
     }
 
@@ -128,4 +96,3 @@ export const sessionService = {
     return payload
   },
 }
-

@@ -14,8 +14,6 @@ import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { useCurrentOrganization } from '@/hooks/useCurrentOrganization'
 import { PermissionAwareSidebar } from './PermissionAwareSidebar'
 
-const SIDEBAR_SCROLL_KEY = 'cacsms-sidebar-scroll-top'
-
 export function AppShell({
   children,
   showTopbar = true,
@@ -32,7 +30,6 @@ export function AppShell({
   const { user } = useCurrentUser()
   const { organization } = useCurrentOrganization()
   const mainRef = useRef<HTMLDivElement>(null)
-  const sidebarBodyRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
   const activeParentId = useMemo(() => {
@@ -55,31 +52,8 @@ export function AppShell({
   const expandedItems = manualExpandedItems ?? (sidebarVariant === 'landing' ? [] : [activeParentId])
 
   useLayoutEffect(() => {
-    const sidebarBody = sidebarBodyRef.current
-    if (!sidebarBody) {
-      return
-    }
-
-    const storedScrollTop = window.sessionStorage.getItem(SIDEBAR_SCROLL_KEY)
-    if (!storedScrollTop) {
-      return
-    }
-
-    sidebarBody.scrollTop = Number(storedScrollTop)
-  }, [pathname, activeParentId])
-
-  useLayoutEffect(() => {
     mainRef.current?.scrollTo({ top: 0, left: 0 })
   }, [pathname])
-
-  const saveSidebarScroll = () => {
-    const sidebarBody = sidebarBodyRef.current
-    if (!sidebarBody) {
-      return
-    }
-
-    window.sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(sidebarBody.scrollTop))
-  }
 
   const toggleItem = (id: string) => {
     setManualExpandedItems((current) =>
@@ -90,7 +64,6 @@ export function AppShell({
   }
 
   const handleNavigate = () => {
-    saveSidebarScroll()
     setManualExpandedItems(null)
     setMobileOpen(false)
   }
@@ -107,7 +80,7 @@ export function AppShell({
         ) : (
           <SidebarSearch collapsed={collapsed} />
         )}
-        <div ref={sidebarBodyRef} className="app-sidebar-body" onScroll={saveSidebarScroll}>
+        <div className="app-sidebar-body">
           <PermissionAwareSidebar
             sections={sections}
             loading={sidebarVariant !== 'landing' && navigationLoading}

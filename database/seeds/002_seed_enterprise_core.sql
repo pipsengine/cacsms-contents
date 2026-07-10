@@ -1,6 +1,9 @@
 IF EXISTS (SELECT 1 FROM schema_migrations WHERE version = '001_initial_schema')
 BEGIN
-DECLARE @org UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM organizations WHERE slug = 'acme-media');
+DECLARE @org UNIQUEIDENTIFIER = COALESCE(
+  (SELECT TOP 1 id FROM organizations WHERE slug = 'ai-media-group'),
+  (SELECT TOP 1 id FROM organizations ORDER BY created_at)
+);
 DECLARE @adminRole UNIQUEIDENTIFIER = (SELECT TOP 1 id FROM roles WHERE organization_id = @org AND code = 'super_admin');
 
 MERGE permissions AS target
@@ -61,4 +64,3 @@ ON target.provider_name = source.provider_name
 WHEN MATCHED THEN UPDATE SET status = source.status, updated_at = SYSUTCDATETIME()
 WHEN NOT MATCHED THEN INSERT (provider_name, status, base_url) VALUES (source.provider_name, source.status, source.base_url);
 END;
-

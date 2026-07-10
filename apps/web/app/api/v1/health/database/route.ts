@@ -1,5 +1,4 @@
+import { withErrorHandling } from '@/api/middleware/withErrorHandling'
 import { databaseHealthController } from '@/api/controllers/databaseHealthController'
 
-export async function GET() {
-  return databaseHealthController.getHealth()
-}
+export const GET = withErrorHandling(() => databaseHealthController.getHealth())

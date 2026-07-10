@@ -1,6 +1,5 @@
 import { navigationRepository } from '@cacsms/database'
 import { navigationSections, type NavSection } from '@/config/navigation'
-import { logger } from '@/shared/logging/logger'
 
 type NavigationRow = {
   section_id: string
@@ -13,24 +12,16 @@ type NavigationRow = {
 
 export const navigationService = {
   async getNavigationTree(permissionCodes: string[] = []) {
-    try {
-      const rows = await navigationRepository.getNavigationTree(permissionCodes)
-      return {
-        source: 'database' as const,
-        data: normalizeNavigation(rows as NavigationRow[]),
-      }
-    } catch (error) {
-      logger.warn(error, 'Navigation database fallback active')
-      return {
-        source: 'mock' as const,
-        data: navigationSections,
-      }
+    const rows = await navigationRepository.getNavigationTree(permissionCodes)
+    return {
+      source: 'database' as const,
+      data: normalizeNavigation(rows as NavigationRow[]),
     }
   },
 }
 
 function normalizeNavigation(rows: NavigationRow[]): NavSection[] {
-  if (!rows.length) return navigationSections
+  if (!rows.length) return []
   const sections = new Map<string, NavSection>()
 
   for (const row of rows) {
@@ -57,6 +48,5 @@ function normalizeNavigation(rows: NavigationRow[]): NavSection[] {
     })
   }
 
-  const normalized = Array.from(sections.values()).filter((section) => section.items.length)
-  return normalized.length ? normalized : navigationSections
+  return Array.from(sections.values()).filter((section) => section.items.length)
 }

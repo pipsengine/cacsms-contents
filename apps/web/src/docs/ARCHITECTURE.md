@@ -29,7 +29,7 @@ Pages must not import repositories or SQL clients. Business logic belongs in ser
 - Navigation
 - System Monitoring dashboards
 - Database health
-- Mock fallback when MSSQL is unavailable
+- Live SQL Server data access with explicit errors when the database is unavailable
 
 ## Response Standard
 
@@ -38,7 +38,7 @@ All enterprise API responses use:
 ```ts
 {
   success: boolean
-  status: 'success' | 'fallback' | 'error'
+  status: 'success' | 'error'
   message: string
   data: unknown
   metadata: Record<string, unknown>

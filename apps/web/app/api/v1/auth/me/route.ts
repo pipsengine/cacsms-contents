@@ -1,6 +1,4 @@
+import { withErrorHandling } from '@/api/middleware/withErrorHandling'
 import { authController } from '@/api/controllers/authController'
 
-export async function GET() {
-  return authController.me()
-}
-
+export const GET = withErrorHandling(() => authController.me())

@@ -1,0 +1,1 @@
+export const scheduledWorkflowsMockData = { summary: {}, engineStatus: {}, lifecycle: [], types: [], schedules: [], scheduleDetails: {}, calendarEvents: [], conflicts: [], capacityForecast: [], missedRuns: [], runHistory: [], autonomousDecisions: [], performance: [], recommendations: [], finalOutputReadiness: [] }

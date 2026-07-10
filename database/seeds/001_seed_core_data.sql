@@ -10,13 +10,13 @@ END;
 
 SELECT @org_id = id FROM organizations WHERE slug = 'ai-media-group';
 
-IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'john.doe@cacsms.local')
+IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'system.admin@cacsms.local')
 BEGIN
   INSERT INTO users(organization_id, full_name, email, status)
-  VALUES (@org_id, 'John Doe', 'john.doe@cacsms.local', 'active');
+  VALUES (@org_id, 'System Administrator', 'system.admin@cacsms.local', 'active');
 END;
 
-SELECT @admin_id = id FROM users WHERE email = 'john.doe@cacsms.local';
+SELECT @admin_id = id FROM users WHERE email = 'system.admin@cacsms.local';
 
 IF NOT EXISTS (SELECT 1 FROM roles WHERE organization_id = @org_id AND code = 'super_admin')
 BEGIN

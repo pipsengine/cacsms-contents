@@ -1,8 +1,8 @@
 import { monitoringService } from '@/services/monitoringService'
-import { apiDatabase, apiFallback } from '@/shared/api/apiResponse'
+import { apiDatabase } from '@/shared/api/apiResponse'
 
-function respond(result: { source: 'database' | 'mock'; data: unknown }, databaseMessage: string) {
-  return result.source === 'database' ? apiDatabase(result.data, databaseMessage) : apiFallback(result.data)
+function respond(result: { source: 'database'; data: unknown }, databaseMessage: string) {
+  return apiDatabase(result.data, databaseMessage)
 }
 
 export const systemMonitoringController = {

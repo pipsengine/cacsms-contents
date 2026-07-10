@@ -1,0 +1,1 @@
+export const workflowLogsMockData = { summary: {}, observabilityStatus: {}, traceLifecycle: [], eventStream: [], workflowEvents: [], eventDetails: {}, traceExplorer: [], stageTimeline: [], transitionTrace: [], agentTrace: [], jobTrace: [], recoveryHistory: [], outputLineage: [], errorClusters: [], savedViews: [], alertRules: [], investigations: [], analytics: [], retention: [] }

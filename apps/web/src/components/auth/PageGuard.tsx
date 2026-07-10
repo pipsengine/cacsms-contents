@@ -1,21 +1,18 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useAuth } from './AuthProvider'
 import { AccessDenied } from './AccessDenied'
 
 export function PageGuard({ permission, children }: { permission?: string; children: React.ReactNode }) {
-  const router = useRouter()
   const { canAccess, loading, sessionValid, audit } = useAuth()
   const allowed = canAccess(permission)
 
   useEffect(() => {
     if (!loading && !sessionValid) {
       void audit({ action: 'session.expired', resource: 'page_guard', permission, status: 'expired' })
-      router.replace('/login')
     }
-  }, [audit, loading, permission, router, sessionValid])
+  }, [audit, loading, permission, sessionValid])
 
   useEffect(() => {
     if (!loading && sessionValid && permission) {
@@ -33,4 +30,3 @@ export function PageGuard({ permission, children }: { permission?: string; child
   if (!allowed) return <AccessDenied permission={permission} />
   return <>{children}</>
 }
-

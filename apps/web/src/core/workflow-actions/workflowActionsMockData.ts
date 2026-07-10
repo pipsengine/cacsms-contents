@@ -1,0 +1,1 @@
+export const workflowActionsMockData = { summary: {}, engineStatus: {}, lifecycle: [], executionLifecycle: [], categories: [], actions: [], executions: [], recoveries: [], circuitBreakers: [], performance: [], recommendations: [], finalOutputLinkage: [] }

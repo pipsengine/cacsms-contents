@@ -10,8 +10,7 @@ export type CoreEngineSnapshot = {
 }
 
 export type CoreEngineResult = {
-  source: 'database' | 'mock'
+  source: 'database'
   generatedAt: string
   snapshot: CoreEngineSnapshot
 }
-

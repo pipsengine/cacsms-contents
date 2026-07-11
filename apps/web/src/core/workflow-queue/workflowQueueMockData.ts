@@ -1,1 +1,0 @@
-export const workflowQueueMockData = { summary: {}, controlStatus: {}, pipeline: [], queues: [], queueItems: [], queueItemDetails: {}, priorityTrace: [], congestionPredictions: [], rebalancingEvents: [], capacityMatches: [], stuckItems: [], deadLetters: [], retryPolicies: [], slaRisks: [], dependencyMap: [], performance: [], autonomousDecisions: [], finalOutputImpact: [] }

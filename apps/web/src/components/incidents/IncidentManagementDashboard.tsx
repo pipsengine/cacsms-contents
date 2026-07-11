@@ -119,11 +119,12 @@ function KpiCard({ icon: Icon, item }: { icon: LucideIcon; item: Record<string, 
   )
 }
 
-function HeaderMeta({ data, now }: { data: IncidentData; now: Date }) {
+function HeaderMeta({ data, now }: { data: IncidentData; now: Date | null }) {
+  const synchronizedAt = data.summary.lastSynchronizedAt ? fmtTime(String(data.summary.lastSynchronizedAt)) : now ? fmtTime(now.toISOString()) : '-'
   return (
     <div className="incident-header-meta">
       <span><Radio size={14} /> {fmt(data.summary.monitoringStatus)} monitoring</span>
-      <span><Clock3 size={14} /> {fmtTime(String(data.summary.lastSynchronizedAt ?? now.toISOString()))}</span>
+      <span><Clock3 size={14} /> {synchronizedAt}</span>
       <span><Database size={14} /> {fmt(data.dataSource)}</span>
       <span><Users size={14} /> {fmt(data.summary.onCallTeam)}</span>
       <span>{fmt(data.summary.environment)}</span>
@@ -330,7 +331,7 @@ export function IncidentManagementDashboard() {
   const [query, setQuery] = useState('')
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({})
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [now, setNow] = useState(new Date())
+  const [now, setNow] = useState<Date | null>(null)
 
   const apiUrl = useMemo(() => {
     const params = new URLSearchParams()
@@ -380,7 +381,7 @@ export function IncidentManagementDashboard() {
           <p>Detect, prioritize, investigate, resolve, and review operational incidents across the AI Media Operating System.</p>
           <HeaderMeta data={data} now={now} />
         </div>
-        <div className="incident-live-clock"><Clock3 size={16} /> {new Intl.DateTimeFormat('en-NG', { timeZone: 'Africa/Lagos', weekday: 'short', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now)}</div>
+        <div className="incident-live-clock"><Clock3 size={16} /> {now ? new Intl.DateTimeFormat('en-NG', { timeZone: 'Africa/Lagos', weekday: 'short', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now) : 'Loading Nigeria time'}</div>
       </header>
 
       {error ? <div className="incident-error">{error}</div> : null}

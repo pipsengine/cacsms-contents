@@ -239,7 +239,7 @@ export function WorkflowAutomationDashboard() {
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({})
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [now, setNow] = useState(new Date())
+  const [now, setNow] = useState<Date | null>(null)
 
   const url = useMemo(() => {
     const params = new URLSearchParams()
@@ -293,7 +293,7 @@ export function WorkflowAutomationDashboard() {
             <span><Clock3 size={14} /> {time(data.summary.lastWorkflowEvent as string | null)}</span>
           </div>
         </div>
-        <div className="wf-auto-clock">{new Intl.DateTimeFormat('en-NG', { timeZone: 'Africa/Lagos', weekday: 'short', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now)}</div>
+        <div className="wf-auto-clock">{now ? new Intl.DateTimeFormat('en-NG', { timeZone: 'Africa/Lagos', weekday: 'short', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now) : 'Loading Nigeria time'}</div>
       </header>
       {error ? <div className="wf-auto-error">{error}</div> : null}
       <section className="wf-auto-kpis">{(data.summary.kpis ?? []).map((item, index) => <Kpi key={fmt(item.label)} item={item} icon={icons[index] ?? Activity} />)}</section>

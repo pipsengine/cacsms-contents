@@ -86,7 +86,7 @@ export function WorkflowDefinitionsDashboard() {
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string>>({})
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [now, setNow] = useState(new Date())
+  const [now, setNow] = useState<Date | null>(null)
   const url = useMemo(() => { const params = new URLSearchParams(); if (query.trim()) params.set('q', query.trim()); Object.entries(selectedFilters).forEach(([k, v]) => v && v !== 'All' && params.set(k, v)); return `/api/v1/workflow-definitions${params.toString() ? `?${params}` : ''}` }, [query, selectedFilters])
   const load = useCallback(async () => {
     try {
@@ -103,7 +103,7 @@ export function WorkflowDefinitionsDashboard() {
   const filterKeys = ['status', 'validationStatus', 'category', 'workflowType', 'owner', 'environment', 'recoveryPolicy', 'finalOutput']
   return (
     <main className="wf-def-page">
-      <header className="wf-def-header"><div><nav>Workflow Automation / Workflow Definitions</nav><h1>Workflow Definitions</h1><p>Live database view of every autonomous workflow definition, readiness signal, version state, validation result, and optimization recommendation.</p><div className="wf-def-meta"><span><Workflow size={14} /> Total {fmt(data.summary.totalDefinitions)}</span><span><CheckCircle2 size={14} /> Published {fmt(data.summary.publishedVersions)}</span><span><AlertTriangle size={14} /> Invalid {fmt(data.summary.invalidDefinitions)}</span><span><Database size={14} /> {fmt(data.dataSource)}</span></div></div><div className="wf-def-clock">{new Intl.DateTimeFormat('en-NG', { timeZone: 'Africa/Lagos', weekday: 'short', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now)}</div></header>
+      <header className="wf-def-header"><div><nav>Workflow Automation / Workflow Definitions</nav><h1>Workflow Definitions</h1><p>Live database view of every autonomous workflow definition, readiness signal, version state, validation result, and optimization recommendation.</p><div className="wf-def-meta"><span><Workflow size={14} /> Total {fmt(data.summary.totalDefinitions)}</span><span><CheckCircle2 size={14} /> Published {fmt(data.summary.publishedVersions)}</span><span><AlertTriangle size={14} /> Invalid {fmt(data.summary.invalidDefinitions)}</span><span><Database size={14} /> {fmt(data.dataSource)}</span></div></div><div className="wf-def-clock">{now ? new Intl.DateTimeFormat('en-NG', { timeZone: 'Africa/Lagos', weekday: 'short', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now) : 'Loading Nigeria time'}</div></header>
       {error ? <div className="wf-def-error">{error}</div> : null}
       <section className="wf-def-kpis">{(data.summary.kpis ?? []).map((item, index) => <Kpi key={fmt(item.label)} item={item} icon={icons[index] ?? Activity} />)}</section>
       <HealthOverview data={data} />

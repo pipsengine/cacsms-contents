@@ -11,7 +11,7 @@ export default function ModulePage({ params }: { params: { module: string } }) {
   }
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="landing">
       <section className="module-page">
         <h1>{moduleInfo.label}</h1>
         <p>This is the module page for {moduleInfo.label}.</p>

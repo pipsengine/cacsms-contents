@@ -67,7 +67,29 @@ export const workflowDashboardRepository = {
   async queues() {
     const pool = await getConnectionPool()
     const org = await this.organizationId()
-    const result = await pool.request().input('org', sql.UniqueIdentifier, org).query('SELECT * FROM vw_workflow_queue_health WHERE organization_id = @org ORDER BY queue_name')
+    const result = await pool.request().input('org', sql.UniqueIdentifier, org).query(`
+      SELECT
+        q.id,
+        q.organization_id,
+        q.name AS queue_name,
+        COUNT(CASE WHEN bj.status IN ('queued','pending') THEN 1 END) AS waiting_jobs,
+        COUNT(CASE WHEN bj.status = 'running' THEN 1 END) AS active_jobs,
+        COUNT(CASE WHEN bj.status = 'delayed' THEN 1 END) AS delayed_jobs,
+        COUNT(CASE WHEN bj.status = 'failed' THEN 1 END) AS failed_jobs,
+        COUNT(CASE WHEN bj.status = 'completed' THEN 1 END) AS completed_jobs,
+        CAST(COALESCE(q.health_percent, 100) AS DECIMAL(8,2)) AS health_percent,
+        CASE
+          WHEN COUNT(CASE WHEN bj.status = 'failed' THEN 1 END) > 0 THEN 'at-risk'
+          WHEN COALESCE(q.health_percent, 100) < 90 THEN 'degraded'
+          ELSE 'healthy'
+        END AS queue_status,
+        MAX(COALESCE(bj.updated_at, bj.created_at, q.updated_at, q.created_at)) AS last_activity
+      FROM job_queues q
+      LEFT JOIN background_jobs bj ON bj.job_queue_id = q.id AND bj.is_deleted = 0
+      WHERE q.organization_id = @org AND q.is_deleted = 0
+      GROUP BY q.id, q.organization_id, q.name, q.health_percent
+      ORDER BY q.name
+    `)
     return result.recordset.map(camel)
   },
 

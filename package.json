@@ -13,6 +13,7 @@
     "db:migrate": "node packages/database/scripts.mjs migrate",
     "db:seed": "node packages/database/scripts.mjs seed",
     "db:reset": "node packages/database/scripts.mjs reset",
-    "db:status": "node packages/database/scripts.mjs status"
+    "db:status": "node packages/database/scripts.mjs status",
+    "test:e2e:workflow": "node scripts/e2e-workflow-smoke.mjs"
   }
 }

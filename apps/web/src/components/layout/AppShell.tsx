@@ -49,7 +49,8 @@ export function AppShell({
     return 'executive-office'
   }, [pathname, sections])
 
-  const expandedItems = manualExpandedItems ?? (sidebarVariant === 'landing' ? [] : [activeParentId])
+  const autoExpandedItems = sidebarVariant === 'landing' && pathname === '/' ? [] : [activeParentId]
+  const expandedItems = manualExpandedItems ?? autoExpandedItems
 
   useLayoutEffect(() => {
     mainRef.current?.scrollTo({ top: 0, left: 0 })
@@ -57,8 +58,8 @@ export function AppShell({
 
   const toggleItem = (id: string) => {
     setManualExpandedItems((current) =>
-      (current ?? (sidebarVariant === 'landing' ? [] : [activeParentId])).includes(id)
-        ? (current ?? (sidebarVariant === 'landing' ? [] : [activeParentId])).filter((itemId) => itemId !== id)
+      (current ?? autoExpandedItems).includes(id)
+        ? (current ?? autoExpandedItems).filter((itemId) => itemId !== id)
         : [id]
     )
   }
@@ -73,7 +74,7 @@ export function AppShell({
       <aside className={`app-sidebar ${mobileOpen ? 'open' : ''}`}>
         <SidebarHeader collapsed={collapsed} onToggle={toggleCollapsed} variant={sidebarVariant} organization={organization} />
         {sidebarVariant === 'landing' ? (
-          <Link href="/" className="sidebar-dashboard-link active" onClick={handleNavigate}>
+          <Link href="/" className={`sidebar-dashboard-link ${pathname === '/' ? 'active' : ''}`} onClick={handleNavigate}>
             <LayoutDashboard size={15} />
             {!collapsed ? <span>Dashboard</span> : null}
           </Link>

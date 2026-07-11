@@ -72,14 +72,30 @@ export const workflowDashboardService = {
       dataSource: 'database' as const,
     }
   },
-  summary: workflowDashboardRepository.summary,
-  pipeline: workflowDashboardRepository.pipeline,
-  categories: workflowDashboardRepository.categories,
-  recoveries: workflowDashboardRepository.recoveries,
-  queues: workflowDashboardRepository.queues,
-  definitionHealth: workflowDashboardRepository.definitionHealth,
-  decisions: workflowDashboardRepository.decisions,
-  outputReadiness: workflowDashboardRepository.outputReadiness,
+  summary() {
+    return workflowDashboardRepository.summary()
+  },
+  pipeline() {
+    return workflowDashboardRepository.pipeline()
+  },
+  categories() {
+    return workflowDashboardRepository.categories()
+  },
+  recoveries() {
+    return workflowDashboardRepository.recoveries()
+  },
+  queues() {
+    return workflowDashboardRepository.queues()
+  },
+  definitionHealth() {
+    return workflowDashboardRepository.definitionHealth()
+  },
+  decisions() {
+    return workflowDashboardRepository.decisions()
+  },
+  outputReadiness() {
+    return workflowDashboardRepository.outputReadiness()
+  },
   streamDescriptor() {
     return {
       stream: 'polling-ready',

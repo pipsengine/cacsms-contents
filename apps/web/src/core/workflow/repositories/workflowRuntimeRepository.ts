@@ -266,11 +266,10 @@ export const workflowRuntimeRepository = {
       .input('organizationId', sql.UniqueIdentifier, instance.organizationId)
       .input('queueId', sql.UniqueIdentifier, queueId)
       .input('name', sql.NVarChar, name)
-      .input('createdBy', sql.NVarChar, instance.initiatedBy ?? null)
       .query(`
         INSERT INTO background_jobs (organization_id, job_queue_id, name, status, priority, progress_percent, created_by)
         OUTPUT INSERTED.id, INSERTED.name, INSERTED.status, INSERTED.progress_percent
-        VALUES (@organizationId, @queueId, @name, 'queued', 'medium', 0, TRY_CONVERT(uniqueidentifier, @createdBy))
+        VALUES (@organizationId, @queueId, @name, 'queued', 'medium', 0, NULL)
       `)
     const row = result.recordset[0]
     return { id: String(row.id), name: String(row.name), status: String(row.status), progressPercent: Number(row.progress_percent), workflowInstanceId: instanceId }

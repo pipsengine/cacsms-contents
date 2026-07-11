@@ -6,8 +6,16 @@ emitter.setMaxListeners(200)
 
 export const workflowStream = {
   publish(update: WorkflowStreamEvent) {
-    emitter.emit(update.instanceId, update)
-    emitter.emit('*', update)
+    for (const eventName of [update.instanceId, '*']) {
+      for (const listener of emitter.listeners(eventName)) {
+        const handler = listener as (update: WorkflowStreamEvent) => void
+        try {
+          handler(update)
+        } catch {
+          emitter.off(eventName, handler)
+        }
+      }
+    }
   },
 
   subscribe(instanceId: string, handler: (update: WorkflowStreamEvent) => void) {

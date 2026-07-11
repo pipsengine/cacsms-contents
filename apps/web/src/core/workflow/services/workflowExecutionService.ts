@@ -68,9 +68,7 @@ export const workflowExecutionService = {
         ['queued', 'starting', 'running', 'paused', 'stopping'].includes(instance.status)
     )
 
-    if (input.workflowCode.startsWith('SYSTEM_') && active) {
-      throw new Error(`A ${input.workflowCode} workflow is already active.`)
-    }
+    if (input.workflowCode.startsWith('SYSTEM_') && active) return workflowRuntimeRepository.getSnapshot(active.id)
 
     const instance = await workflowRuntimeRepository.createInstance({
       definition,
@@ -80,15 +78,19 @@ export const workflowExecutionService = {
       requestedBy: input.requestedBy,
       correlationId: crypto.randomUUID(),
     })
+    cancelled.delete(instance.id)
+    paused.delete(instance.id)
 
     const queueName = queueByWorkflow[input.workflowCode] ?? 'workflow-execution'
     const job = await workflowRuntimeRepository.createQueueJob(queueName, `Execute ${input.workflowCode}`, instance.id)
     await workflowQueueService.enqueue(queueName, { instanceId: instance.id, workflowCode: input.workflowCode })
     await auditService.log('workflow start', 'workflow_instances', { workflowInstanceId: instance.id, workflowCode: input.workflowCode, requestedBy: input.requestedBy })
     await workflowRuntimeRepository.addLog(instance.id, `Queued ${input.workflowCode}`, { queueName, jobId: job.id })
+    if (input.workflowCode.startsWith('SYSTEM_')) await syncSystemRuntimeState(instance.id)
     await publish(instance.id, 'workflow.instance.created')
 
-    void this.run(instance.id)
+    const runPromise = this.run(instance.id)
+    void runPromise
     return workflowRuntimeRepository.getSnapshot(instance.id)
   },
 
@@ -194,6 +196,7 @@ export const workflowExecutionService = {
       }
     } catch (error) {
       await workflowRuntimeRepository.updateInstance(instanceId, { status: 'failed' })
+      await syncSystemRuntimeState(instanceId, 'failed')
       await workflowRuntimeRepository.addLog(instanceId, error instanceof Error ? error.message : 'Workflow failed', {}, 'error')
       await publish(instanceId, 'workflow.failed')
     } finally {

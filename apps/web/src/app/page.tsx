@@ -2,7 +2,7 @@ import { AppShell } from '@/components/layout/AppShell'
 
 export default function HomePage() {
   return (
-    <AppShell>
+    <AppShell sidebarVariant="landing">
       <section className="home-hero-card">
         <div className="home-hero-copy">
           <p className="home-eyebrow">Live database mode</p>

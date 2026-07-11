@@ -7,19 +7,39 @@ function sse(event: string, data: unknown) {
 }
 
 export async function GET() {
+  let cleanup = () => {}
   const stream = new ReadableStream({
     start(controller) {
-      const unsubscribe = workflowStream.subscribeAll((update) => {
-        if (update.payload.instance.workflowCode.startsWith('SYSTEM_')) {
-          controller.enqueue(sse(update.event, update.payload))
-        }
-      })
-      const heartbeat = setInterval(() => controller.enqueue(sse('heartbeat', { at: new Date().toISOString() })), 15000)
-
-      return () => {
-        clearInterval(heartbeat)
+      let closed = false
+      const timers: Array<ReturnType<typeof setInterval>> = []
+      let unsubscribe = () => {}
+      const close = () => {
+        if (closed) return
+        closed = true
+        timers.forEach(clearInterval)
         unsubscribe()
       }
+      const send = (event: string, data: unknown) => {
+        if (closed) return
+        try {
+          controller.enqueue(sse(event, data))
+        } catch {
+          close()
+        }
+      }
+
+      unsubscribe = workflowStream.subscribeAll((update) => {
+        if (update.payload.instance.workflowCode.startsWith('SYSTEM_')) {
+          send(update.event, update.payload)
+        }
+      })
+      timers.push(setInterval(() => send('heartbeat', { at: new Date().toISOString() }), 15000))
+      cleanup = close
+      return close
+    },
+
+    cancel() {
+      cleanup()
     },
   })
 

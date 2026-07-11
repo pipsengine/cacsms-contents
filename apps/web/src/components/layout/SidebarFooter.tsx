@@ -1,6 +1,6 @@
 'use client'
 
-import { Cpu, LogOut, Sparkles } from 'lucide-react'
+import { Cpu, Database } from 'lucide-react'
 import type { CurrentUser } from '@/services/sessionService'
 
 export function SidebarFooter({
@@ -35,16 +35,14 @@ export function SidebarFooter({
       ) : (
         <div className="sidebar-profile-avatar collapsed">{user?.avatarInitials ?? '--'}</div>
       )}
-      <div className="sidebar-footer-actions">
-        <button type="button" className="sidebar-footer-button">
-          <Sparkles size={16} />
-          {!collapsed ? <span>Settings</span> : null}
-        </button>
-        <button type="button" className="sidebar-footer-button">
-          <LogOut size={16} />
-          {!collapsed ? <span>Logout</span> : null}
-        </button>
-      </div>
+      {variant === 'default' ? null : (
+        <div className="sidebar-footer-actions passive" aria-label="Sidebar data mode">
+          <span className="sidebar-footer-status">
+            <Database size={16} />
+            {!collapsed ? <span>Live database mode</span> : null}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

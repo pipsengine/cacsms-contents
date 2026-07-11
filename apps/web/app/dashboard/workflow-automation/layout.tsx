@@ -3,7 +3,7 @@ import { AppShell } from '@/components/layout/AppShell'
 
 export default function DashboardWorkflowAutomationLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AppShell showTopbar={false}>
+    <AppShell showTopbar={false} sidebarVariant="landing">
       <PageGuard permission="workflow.view">{children}</PageGuard>
     </AppShell>
   )

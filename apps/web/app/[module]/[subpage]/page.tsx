@@ -14,7 +14,7 @@ export default function SubpagePage({ params }: { params: { module: string; subp
   }
 
   return (
-    <AppShell>
+    <AppShell sidebarVariant="landing">
       <section className="module-page">
         <p className="home-eyebrow">{moduleInfo.label}</p>
         <h1>{subpage.label}</h1>

@@ -1,0 +1,21 @@
+export const autonomousRecoveryPoliciesMockData = {
+  summary: {},
+  engineStatus: {},
+  lifecycle: [],
+  categories: [],
+  policies: [],
+  policyDetails: {},
+  policyBuilder: [],
+  strategyCatalogue: [],
+  validationResults: [],
+  simulationResults: [],
+  conflicts: [],
+  coverageMatrix: [],
+  decisionTrace: [],
+  performance: [],
+  recommendations: [],
+  finalOutputProtection: [],
+  governanceItems: [],
+  autonomousDecisions: [],
+}
+
